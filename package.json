@@ -9,7 +9,7 @@
   },
   "keywords": [],
   "author": "Padev3",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@types/node": "^18.0.6",
     "bcrypt": "^5.1.1",
