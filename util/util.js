@@ -27,7 +27,7 @@ db.on("connect", () => console.log("Connected to database"));
 db.on("error", (err) => console.log(err));
 
 // authentication middleware
-const authorize = (req, res, next) => {
+const userAuthorize = (req, res, next) => {
   // decode the jwt token and give us your information
 
   let { authorization } = req.headers;
@@ -63,4 +63,4 @@ const authorize = (req, res, next) => {
   }
 };
 
-export { db, authorize };
+export { db, userAuthorize };
