@@ -1,36 +1,51 @@
--- Database: 6thtouch
+-- public.users definition
 
--- DROP DATABASE IF EXISTS "6thtouch";
+-- Drop table
 
-CREATE DATABASE "6thtouch"
-    WITH
-    OWNER = postgres
-    ENCODING = 'UTF8'
-    LC_COLLATE = 'English_United States.1252'
-    LC_CTYPE = 'English_United States.1252'
-    LOCALE_PROVIDER = 'libc'
-    TABLESPACE = pg_default
-    CONNECTION LIMIT = -1
-    IS_TEMPLATE = False;
+-- DROP TABLE public.users;
 
+CREATE TABLE public.users (
+	id uuid NOT NULL,
+	firstname varchar NOT NULL,
+	lastname varchar NOT NULL,
+	email varchar NOT NULL,
+	"password" varchar NOT NULL,
+	createdat timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	CONSTRAINT users_pk PRIMARY KEY (id),
+	CONSTRAINT users_un UNIQUE (email)
+);
 
--- Table: public.users
+-- public.courses definition
 
--- DROP TABLE IF EXISTS public.users;
+-- Drop table
 
-CREATE TABLE IF NOT EXISTS public.users
-(
-    id uuid NOT NULL,
-    firstname character varying COLLATE pg_catalog."default" NOT NULL,
-    lastname character varying COLLATE pg_catalog."default" NOT NULL,
-    email character varying COLLATE pg_catalog."default" NOT NULL,
-    password character varying COLLATE pg_catalog."default" NOT NULL,
-    createdat timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT users_pk PRIMARY KEY (id),
-    CONSTRAINT users_un UNIQUE (email)
-)
+-- DROP TABLE public.courses;
 
-TABLESPACE pg_default;
+CREATE TABLE public.courses (
+	id uuid NOT NULL,
+	"name" varchar NOT NULL,
+	description varchar NOT NULL,
+	subscribers _varchar NULL,
+	thumbnail varchar NOT NULL,
+	createdat timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	CONSTRAINT courses_pk PRIMARY KEY (id)
+);
 
-ALTER TABLE IF EXISTS public.users
-    OWNER to postgres;
+-- public.topics definition
+
+-- Drop table
+
+-- DROP TABLE public.topics;
+
+CREATE TABLE public.topics (
+	id uuid NOT NULL,
+	title varchar NOT NULL,
+	note varchar NOT NULL,
+	description varchar NOT NULL,
+	video varchar NOT NULL,
+	createdat time NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	courseid uuid NOT NULL,
+	thumbnail varchar NULL,
+	CONSTRAINT topics_pk PRIMARY KEY (id),
+	CONSTRAINT topics_courses_fk FOREIGN KEY (courseid) REFERENCES public.courses(id) ON DELETE CASCADE
+);
