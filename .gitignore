@@ -128,3 +128,13 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+
+
+*.png
+*.jpg
+*.gif
+*.jfif
+*.jpeg
+*.mkv
+*.mp4

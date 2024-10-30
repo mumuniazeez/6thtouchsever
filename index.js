@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import { config } from "dotenv";
 import router from "./router/router.js";
+import adminRouter from "./router/admin/router.js";
 
 config();
 const app = express();
@@ -13,13 +14,13 @@ app.use(express.json());
 app.use(
   express.urlencoded({
     extended: true,
+    limit: "1gb",
   })
 );
 app.use(express.static("public"));
 app.use(router);
+app.use("/admin", adminRouter);
 
-// make our app listen for request
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
-  // Server running on http://localhost:3400
 });
