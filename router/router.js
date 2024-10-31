@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { userAuthorize, db } from "../util/util.js";
+import { userAuthorize } from "../util/util.js";
 import { config } from "dotenv";
 import { logIn, signUp } from "../controllers/auth.js";
 import {
@@ -7,9 +7,18 @@ import {
   editProfile,
   myProfile,
 } from "../controllers/users.js";
+import {
+  getAllPublicCourse,
+  getAllPublicCourseByCategory,
+  getCourseByID,
+  getCourseTopics,
+  getMyCourses,
+  getTopicByID,
+  searchPublicCourses,
+} from "../controllers/courses.js";
+
 const router = Router();
 config();
-
 // authentication routes
 router.post("/auth/signup", signUp);
 router.post("/auth/login", logIn);
@@ -20,16 +29,12 @@ router.patch("/user/me", userAuthorize, editProfile);
 router.delete("/user/me", userAuthorize, deleteMyProfile);
 
 // courses routes
-router.get("/courses")
-router.get("/courses/:courseId/topics");
-router.get("/courses/:courseId");
-router.get("/courses/:courseId/topics/:topicId");
-
-/* admin routes */
-// admin auth routes
-router.post("admin/auth/login");
-// admin courses route
-router.post("/admin/courses/create");
-router.post("/admin/courses/:courseId/topics/add");
+router.get("/courses", getAllPublicCourse);
+router.get("/courses/myCourses", userAuthorize, getMyCourses);
+router.get("/courses/search/", searchPublicCourses);
+router.get("/courses/category/:category", getAllPublicCourseByCategory);
+router.get("/courses/:courseId/topics", getCourseTopics);
+router.get("/courses/:courseId/topics/:topicId", getTopicByID);
+router.get("/courses/:courseId", getCourseByID);
 
 export default router;
