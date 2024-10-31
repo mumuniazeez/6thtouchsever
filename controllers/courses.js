@@ -53,6 +53,8 @@ export const getCourseByID = async (req, res) => {
         message: "Course not available or may be deleted",
       });
 
+    await db.query("UPDATE courses SET reviews = reviews + 1 WHERE id = $1", [courseId])
+
     res.status(200).json(course);
   } catch (error) {
     console.log(error);
