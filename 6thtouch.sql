@@ -1,36 +1,94 @@
--- Database: 6thtouch
+-- public.users definition
 
--- DROP DATABASE IF EXISTS "6thtouch";
+-- Drop table
 
-CREATE DATABASE "6thtouch"
-    WITH
-    OWNER = postgres
-    ENCODING = 'UTF8'
-    LC_COLLATE = 'English_United States.1252'
-    LC_CTYPE = 'English_United States.1252'
-    LOCALE_PROVIDER = 'libc'
-    TABLESPACE = pg_default
-    CONNECTION LIMIT = -1
-    IS_TEMPLATE = False;
+-- DROP TABLE public.users;
 
+CREATE TABLE public.users (
+	id uuid NOT NULL,
+	firstname varchar NOT NULL,
+	lastname varchar NOT NULL,
+	email varchar NOT NULL,
+	"password" varchar NOT NULL,
+	createdat timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	CONSTRAINT users_pk PRIMARY KEY (id),
+	CONSTRAINT users_un UNIQUE (email)
+);
 
--- Table: public.users
+-- public."admin" definition
 
--- DROP TABLE IF EXISTS public.users;
+-- Drop table
 
-CREATE TABLE IF NOT EXISTS public.users
-(
-    id uuid NOT NULL,
-    firstname character varying COLLATE pg_catalog."default" NOT NULL,
-    lastname character varying COLLATE pg_catalog."default" NOT NULL,
-    email character varying COLLATE pg_catalog."default" NOT NULL,
-    password character varying COLLATE pg_catalog."default" NOT NULL,
-    createdat timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT users_pk PRIMARY KEY (id),
-    CONSTRAINT users_un UNIQUE (email)
-)
+-- DROP TABLE public."admin";
 
-TABLESPACE pg_default;
+CREATE TABLE public."admin" (
+	id uuid NOT NULL,
+	firstname varchar NOT NULL,
+	lastname varchar NOT NULL,
+	email varchar NOT NULL,
+	"password" varchar NOT NULL,
+	createdat timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	CONSTRAINT admin_pk_1 PRIMARY KEY (id),
+	CONSTRAINT admin_un_1 UNIQUE (email)
+);
 
-ALTER TABLE IF EXISTS public.users
-    OWNER to postgres;
+-- public.courses definition
+
+-- Drop table
+
+-- DROP TABLE public.courses;
+
+CREATE TABLE public.courses (
+	id uuid NOT NULL,
+	title varchar NOT NULL,
+	description varchar NOT NULL,
+	subscribers _varchar NULL,
+	thumbnail varchar NOT NULL,
+	createdat timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	ispublic bool NOT NULL DEFAULT false,
+	price money NOT NULL,
+	category varchar NOT NULL,
+	CONSTRAINT courses_pk PRIMARY KEY (id)
+);
+
+-- public.topics definition
+
+-- Drop table
+
+-- DROP TABLE public.topics;
+
+CREATE TABLE public.topics (
+	id uuid NOT NULL,
+	title varchar NOT NULL,
+	note varchar NOT NULL,
+	description varchar NOT NULL,
+	video varchar NOT NULL,
+	createdat time NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	courseid uuid NOT NULL,
+	CONSTRAINT topics_pk PRIMARY KEY (id),
+	CONSTRAINT topics_courses_fk FOREIGN KEY (courseid) REFERENCES public.courses(id) ON DELETE CASCADE
+);
+
+-- public."comments" definition
+
+-- Drop table
+
+-- DROP TABLE public."comments";
+
+CREATE TABLE public."comments" (
+	id uuid NOT NULL,
+	message varchar NOT NULL,
+	"user" uuid NULL,
+	commentid uuid NULL,
+	"type" varchar NOT NULL,
+	createdat timetz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"admin" uuid NULL,
+	topicid uuid NOT NULL,
+	courseid uuid NOT NULL,
+	CONSTRAINT comments_pk PRIMARY KEY (id),
+	CONSTRAINT comments_admin_fk FOREIGN KEY ("admin") REFERENCES public."admin"(id),
+	CONSTRAINT comments_comments_fk FOREIGN KEY (id) REFERENCES public."comments"(id),
+	CONSTRAINT comments_courses_fk FOREIGN KEY (courseid) REFERENCES public.courses(id) ON DELETE CASCADE,
+	CONSTRAINT comments_topics_fk FOREIGN KEY (topicid) REFERENCES public.topics(id),
+	CONSTRAINT comments_users_fk FOREIGN KEY ("user") REFERENCES public.users(id)
+);
