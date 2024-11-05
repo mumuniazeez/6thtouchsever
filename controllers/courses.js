@@ -1,6 +1,6 @@
 import { db } from "../util/util.js";
 
-export const getAllPublicCourse = async (req, res) => {
+export const getAllPublishedCourse = async (req, res) => {
   try {
     let query = `SELECT * FROM courses WHERE ispublic = true`;
     let result = await db.query(query);
@@ -19,7 +19,7 @@ export const getAllPublicCourse = async (req, res) => {
   }
 };
 
-export const getAllPublicCourseByCategory = async (req, res) => {
+export const getAllPublishedCourseByCategory = async (req, res) => {
   try {
     let { category } = req.params;
     let query = `SELECT * FROM courses WHERE ispublic = true AND category = $1`;
@@ -53,7 +53,9 @@ export const getCourseByID = async (req, res) => {
         message: "Course not available or may be deleted",
       });
 
-    await db.query("UPDATE courses SET reviews = reviews + 1 WHERE id = $1", [courseId])
+    await db.query("UPDATE courses SET reviews = reviews + 1 WHERE id = $1", [
+      courseId,
+    ]);
 
     res.status(200).json(course);
   } catch (error) {
@@ -85,7 +87,7 @@ export const getCourseTopics = async (req, res) => {
   }
 };
 
-export const searchPublicCourses = async (req, res) => {
+export const searchPublishedCourses = async (req, res) => {
   try {
     let { q: searchQuery } = req.query;
     searchQuery += "%";

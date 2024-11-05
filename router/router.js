@@ -8,13 +8,13 @@ import {
   myProfile,
 } from "../controllers/users.js";
 import {
-  getAllPublicCourse,
-  getAllPublicCourseByCategory,
+  getAllPublishedCourse,
+  getAllPublishedCourseByCategory,
   getCourseByID,
   getCourseTopics,
   getMyCourses,
   getTopicByID,
-  searchPublicCourses,
+  searchPublishedCourses,
 } from "../controllers/courses.js";
 
 const router = Router();
@@ -29,10 +29,10 @@ router.patch("/user/me", userAuthorize, editProfile);
 router.delete("/user/me", userAuthorize, deleteMyProfile);
 
 // courses routes
-router.get("/courses", getAllPublicCourse);
+router.get("/courses", getAllPublishedCourse);
 router.get("/courses/myCourses", userAuthorize, getMyCourses);
-router.get("/courses/search/", searchPublicCourses);
-router.get("/courses/category/:category", getAllPublicCourseByCategory);
+router.get("/courses/search/", searchPublishedCourses);
+router.get("/courses/category/:category", getAllPublishedCourseByCategory);
 router.get("/courses/:courseId/topics", getCourseTopics);
 router.get("/courses/:courseId/topics/:topicId", getTopicByID);
 router.get("/courses/:courseId", getCourseByID);

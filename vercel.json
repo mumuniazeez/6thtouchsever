@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0",
+  "builds": [
+    {
+      "src": "index.js",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/*",
+      "dest": "./",
+      "use": "express"
+    },
+    {
+      "src": "/admin/*",
+      "dest": "./admin",
+      "use": "express"
+    }
+  ]
+}
