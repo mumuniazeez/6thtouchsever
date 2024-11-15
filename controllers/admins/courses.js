@@ -1,8 +1,6 @@
-import { unlink } from "fs";
-import { db } from "../../util/util.js";
-import Courses from "../../models/Courses.js";
+import Courses from "../../models/courses.js";
 import { Op, Sequelize } from "sequelize";
-import Topics from "../../models/Topics.js";
+import Topics from "../../models/topics.js";
 
 export const createCourse = async (req, res) => {
   try {
@@ -18,8 +16,6 @@ export const createCourse = async (req, res) => {
       category,
       thumbnail: path,
     });
-
-    course = await course.save();
 
     if (!course) {
       if (req.file) unlink(req.file.path, (err) => err && console.log(err));
@@ -49,15 +45,16 @@ export const searchAllCourses = async (req, res) => {
       where: Sequelize.or(
         {
           title: {
-            [Op.like]: searchQuery,
+            [Op.iLike]: searchQuery,
           },
         },
         {
           description: {
-            [Op.like]: searchQuery,
+            [Op.iLike]: searchQuery,
           },
         }
       ),
+      include: Topics,
     });
 
     if (courses.length < 1)
@@ -206,13 +203,10 @@ export const editCourse = async (req, res) => {
 export const editTopic = async (req, res) => {
   try {
     let path;
-    let { courseId, topicId } = req.params;
+    let { topicId } = req.params;
     let { title, note, description } = req.body;
 
-    let query = `SELECT * FROM topics WHERE id = $1 AND courseid = $2`;
-    let values = [topicId, courseId];
-    let result = await db.query(query, values);
-    let topic = result.rows[0];
+    let topic = await Topics.findByPk(topicId);
     if (!topic) {
       if (req.file) unlink(req.file.path, (err) => err && console.log(err));
       return res.status(404).json({
@@ -228,14 +222,14 @@ export const editTopic = async (req, res) => {
       path = topic.video;
     }
 
-    query = `
-    UPDATE topics SET title = $1, description = $2, note = $3, video = $4
-    WHERE id = $5
-    `;
-    values = [title, description, note, path, topicId];
-    result = await db.query(query, values);
+    topic.update({
+      title,
+      description,
+      note,
+      video: path,
+    });
 
-    if (result.rowCount < 1) {
+    if (topic.isNewRecord) {
       if (req.file) unlink(req.file.path, (err) => err && console.log(err));
       return res.status(401).json({
         message: "Error editing topic",
@@ -271,7 +265,7 @@ export const deleteCourse = async (req, res) => {
     let course = await Courses.findByPk(courseId);
 
     let { thumbnail } = course;
-    await course.destroy({force: true});
+    await course.destroy({ force: true });
     unlink("public\\" + thumbnail, (err) => err && console.log(err));
 
     if (result.rowCount < 1)
@@ -292,20 +286,19 @@ export const deleteCourse = async (req, res) => {
 
 export const deleteTopic = async (req, res) => {
   try {
-    let { courseId, topicId } = req.params;
-    let query = `DELETE FROM topics WHERE id = $1 AND courseid = $2
-    RETURNING video
-    `;
-    let values = [topicId, courseId];
-    let result = await db.query(query, values);
+    let { topicId } = req.params;
 
-    let { video } = result.rows[0];
+    let topic = await Topics.findByPk(topicId);
+
+    if (!topic)
+      return res.status(404).json({
+        message: "Topic not found",
+      });
+
+    let { video } = topic;
     unlink("public\\" + video, (err) => err && console.log(err));
 
-    if (result.rowCount < 1)
-      return res.status(401).json({
-        message: "Error deleting topic",
-      });
+    await topic.destroy({ force: true });
 
     res.status(200).json({
       message: "Topic deleted successfully",
@@ -321,11 +314,18 @@ export const deleteTopic = async (req, res) => {
 export const publishCourse = async (req, res) => {
   try {
     let { courseId } = req.params;
-    let query = `UPDATE courses SET ispublic = true WHERE id = $1`;
-    let values = [courseId];
-    let result = await db.query(query, values);
+    let [affectRows] = await Courses.update(
+      {
+        isPublic: true,
+      },
+      {
+        where: {
+          id: courseId,
+        },
+      }
+    );
 
-    if (result.rowCount < 1)
+    if (affectRows === 0)
       return res.status(401).json({
         message: "Error publishing course",
       });
@@ -344,11 +344,18 @@ export const publishCourse = async (req, res) => {
 export const unpublishCourse = async (req, res) => {
   try {
     let { courseId } = req.params;
-    let query = `UPDATE courses SET ispublic = false WHERE id = $1`;
-    let values = [courseId];
-    let result = await db.query(query, values);
+    let [affectRows] = await Courses.update(
+      {
+        isPublic: false,
+      },
+      {
+        where: {
+          id: courseId,
+        },
+      }
+    );
 
-    if (result.rowCount < 1)
+    if (affectRows === 0)
       return res.status(401).json({
         message: "Error unpublishing course",
       });

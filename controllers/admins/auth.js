@@ -1,16 +1,11 @@
-import { db } from "../../util/util.js";
-import pkg from "bcrypt";
-const { hash, compare } = pkg;
-import JWTPkg from "jsonwebtoken";
-const { sign } = JWTPkg;
-import Admins from "../../models/Admin.js";
+import { compareSync } from "bcrypt";
+import jwtPkg from "jsonwebtoken";
+const { sign } = jwtPkg;
+import Admins from "../../models/admins.js";
 
 export const addAdmin = async (req, res) => {
   try {
     let { firstName, lastName, email, password } = req.body;
-
-    // hashing password
-    password = await hash(password, 10);
 
     // insert data for database
     let admin = await Admins.create({
@@ -19,8 +14,6 @@ export const addAdmin = async (req, res) => {
       email,
       password,
     });
-
-    admin = await admin.save();
 
     // check if it was successful
     if (!admin)
@@ -40,6 +33,7 @@ export const addAdmin = async (req, res) => {
   }
 };
 
+
 export const adminLogIn = async (req, res) => {
   try {
     let { adminEmail, adminPassword } = req.body;
@@ -58,7 +52,7 @@ export const adminLogIn = async (req, res) => {
       });
 
     // compare the passwords
-    let isPasswordCorrect = await compare(adminPassword, admin.password);
+    let isPasswordCorrect = compareSync(adminPassword, admin.password);
 
     // if password is not correct
     if (!isPasswordCorrect)
