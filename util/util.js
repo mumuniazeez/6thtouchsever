@@ -18,6 +18,11 @@ const database = new Sequelize(process.env.DB_URI, {
       ca: process.env.DB_CA,
     },
   },
+  pool: {
+    max: 10, // Maximum number of connections in the pool
+    min: 0, // Minimum number of connections in the pool
+    idle: 10000, // Connection idle time before release (in ms)
+  },
 });
 
 try {
