@@ -9,14 +9,15 @@ import "pg-hstore";
 
 config();
 
-const database = new Sequelize({
-  database: process.env.DB_NAME,
-  host: process.env.DB_HOST,
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
-  ssl: process.env.NODE_ENV === "production" && process.env.DB_CRT,
+const database = new Sequelize(process.env.DB_URI, {
   dialect: "postgres",
+  dialectOptions: {
+    ssl: process.env.NODE_ENV === "production" && {
+      required: true,
+      rejectUnauthorized: false,
+      ca: process.env.DB_CA,
+    },
+  },
 });
 
 try {
