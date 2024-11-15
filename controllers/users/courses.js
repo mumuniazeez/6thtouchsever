@@ -1,16 +1,21 @@
-import { db } from "../util/util.js";
+import { Op, Sequelize } from "sequelize";
+import Courses from "../../models/courses.js";
+import Topics from "../../models/topics.js";
 
 export const getAllPublishedCourse = async (req, res) => {
   try {
-    let query = `SELECT * FROM courses WHERE ispublic = true`;
-    let result = await db.query(query);
+    let courses = await Courses.findAll({
+      where: {
+        isPublic: true,
+      },
+    });
 
-    if (result.rows.length < 1)
+    if (courses.length < 1)
       return res.status(404).json({
         message: "No course available",
       });
 
-    res.status(200).json(result.rows);
+    res.status(200).json(courses);
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -22,16 +27,19 @@ export const getAllPublishedCourse = async (req, res) => {
 export const getAllPublishedCourseByCategory = async (req, res) => {
   try {
     let { category } = req.params;
-    let query = `SELECT * FROM courses WHERE ispublic = true AND category = $1`;
-    let values = [category];
-    let result = await db.query(query, values);
+    let courses = await Courses.findAll({
+      where: {
+        isPublic: true,
+        category,
+      },
+    });
 
-    if (result.rows.length < 1)
+    if (courses.length < 1)
       return res.status(404).json({
         message: "No course found under this category",
       });
 
-    res.status(200).json(result.rows);
+    res.status(200).json(courses);
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -44,18 +52,20 @@ export const getCourseByID = async (req, res) => {
   try {
     let { courseId } = req.params;
 
-    let query = `SELECT * FROM courses WHERE id = $1`;
-    let values = [courseId];
-    let result = await db.query(query, values);
-    let course = result.rows[0];
+    let course = await Courses.findByPk(courseId);
     if (!course)
       return res.status(404).json({
         message: "Course not available or may be deleted",
       });
 
-    await db.query("UPDATE courses SET reviews = reviews + 1 WHERE id = $1", [
-      courseId,
-    ]);
+    await Courses.increment(
+      { reviews: 1 },
+      {
+        where: {
+          id: courseId,
+        },
+      }
+    );
 
     res.status(200).json(course);
   } catch (error) {
@@ -69,16 +79,18 @@ export const getCourseByID = async (req, res) => {
 export const getCourseTopics = async (req, res) => {
   try {
     let { courseId } = req.params;
-    let query = `SELECT * FROM topics WHERE courseid = $1`;
-    let values = [courseId];
-    let result = await db.query(query, values);
+    let topics = await Topics.findAll({
+      where: {
+        courseId,
+      },
+    });
 
-    if (result.rows.length < 1)
+    if (topics.length < 1)
       return res.status(404).json({
         message: "No topic available under this course",
       });
 
-    res.status(200).json(result.rows);
+    res.status(200).json(topics);
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -92,16 +104,29 @@ export const searchPublishedCourses = async (req, res) => {
     let { q: searchQuery } = req.query;
     searchQuery += "%";
 
-    let query = `SELECT * FROM courses WHERE ispublic = true AND (title LIKE $1 OR description LIKE $1);`;
-    let values = [searchQuery];
-    let result = await db.query(query, values);
-
-    if (result.rows.length < 1)
+    let courses = await Courses.findAll({
+      where: Sequelize.and(
+        { isPublic: true },
+        Sequelize.or(
+          {
+            title: {
+              [Op.iLike]: searchQuery,
+            },
+          },
+          {
+            description: {
+              [Op.iLike]: searchQuery,
+            },
+          }
+        )
+      ),
+    });
+    if (courses.length < 1)
       return res.status(404).json({
         message: "No result found",
       });
 
-    res.status(200).json(result.rows);
+    res.status(200).json(courses);
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -112,18 +137,15 @@ export const searchPublishedCourses = async (req, res) => {
 
 export const getTopicByID = async (req, res) => {
   try {
-    let { courseId, topicId } = req.params;
+    let { topicId } = req.params;
 
-    let query = `SELECT * FROM topics WHERE id = $1 AND courseid = $2`;
-    let values = [topicId, courseId];
-    let result = await db.query(query, values);
-    let course = result.rows[0];
-    if (!course)
+    let topic = Topics.findByPk(topicId);
+    if (!topic)
       return res.status(404).json({
         message: "Topic not available or may be deleted",
       });
 
-    res.status(200).json(course);
+    res.status(200).json(topic);
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -135,19 +157,31 @@ export const getTopicByID = async (req, res) => {
 export const getMyCourses = async (req, res) => {
   try {
     let { id } = req.user;
-    let query = `
-      SELECT * FROM courses
-      WHERE $1 = ANY(subscribers)
-      `;
-    let values = [id];
-    let result = await db.query(query, values);
 
-    if (result.rows.length < 1)
+    let courses = await Courses.findAll();
+    if (courses.length < 1)
       return res.status(404).json({
         message: "You haven't enrolled to any course.",
       });
 
-    res.status(200).json(result.rows);
+    let subscribers = [];
+
+    courses.forEach((course) => {
+      subscribers = [...subscribers, ...course.subscribers, id];
+    });
+
+    courses = await Courses.findAll({
+      where: {
+        subscribers,
+      },
+    });
+
+    if (courses.length < 1)
+      return res.status(404).json({
+        message: "You haven't enrolled to any course.",
+      });
+
+    res.status(200).json(courses);
   } catch (error) {
     console.log(error);
     res.status(500).json({

@@ -1,14 +1,10 @@
-import { db } from "../util/util.js";
+import Users from "../../models/Users.js";
 
 export const myProfile = async (req, res) => {
   try {
     let { id } = req.user;
-    // get the user from the database using the id
-    // i.e WHERE id = $1
-    let query = `SELECT * FROM users WHERE id = $1`;
-    let values = [id];
-    let result = await db.query(query, values);
-    let user = result.rows[0];
+
+    let user = await Users.findByPk(id);
 
     // check if there no user with the given id
     // if (!user)
@@ -35,14 +31,14 @@ export const deleteMyProfile = async (req, res) => {
     let { id } = req.user;
 
     // delete the user from the database
-    let query = `DELETE FROM users WHERE id = $1`;
-    let values = [id];
-    let result = await db.query(query, values);
+    let user = await Users.destroy({
+      where: { id },
+    });
 
     // check if the user was deleted
     // i.e result.rowCount < 1
     // 400
-    if (result.rowCount < 1)
+    if (user < 1)
       return res.status(400).json({
         message: "Error deleteing the account",
       });
@@ -57,29 +53,34 @@ export const deleteMyProfile = async (req, res) => {
   }
 };
 
-export const editProfile =  async (req, res) => {
+export const editProfile = async (req, res) => {
   try {
     let { id } = req.user;
-    let { firstname, lastname, email, password } = req.body;
+    let { firstName, lastName, email, password } = req.body;
 
-    let query = `UPDATE users SET firstname = $1, lastname = $2, email = $3, password = $4
-    WHERE id = $5
-  `;
-    let values = [firstname, lastname, email, password, id];
-    let result = await db.query(query, values);
-
-    if (result.rowCount < 1)
+    let user = await Users.update(
+      {
+        firstName,
+        lastName,
+        email,
+        password,
+      },
+      {
+        where: { id },
+      }
+    );
+    if (user[0] < 1)
       return res.status(401).json({
         message: "Error updating account",
       });
-    
+
     res.status(200).json({
-        message:"Account updated successfully"
-    })
+      message: "Account updated successfully",
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({
-        message: "Error updating account",
-    })
+      message: "Error updating account",
+    });
   }
-}
+};
