@@ -25,7 +25,7 @@ router.post("/auth/login", adminLogIn);
 router.post("/auth/addAdmin", authenticateAdmin, addAdmin);
 
 // admin profile
-router.get("/admin/me", authenticateAdmin, getAdminProfile);
+router.get("/me", authenticateAdmin, getAdminProfile);
 
 // admin courses route
 router.post(

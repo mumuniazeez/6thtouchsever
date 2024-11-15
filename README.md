@@ -16,6 +16,10 @@ This repo contains the code for the 6thtouch learning platform server.
 - multer
 - path
 - pg
+- pg-hstore
+- otpauth
+- nodemailer
+- sequelize
 - nodemon
 
 ## Database
@@ -29,7 +33,7 @@ Use the .env file to configure your environment variables for you local machine
 
 For information on the database structure
 
-Check out: [6thtouch.sql](/6thtouch.sql)
+Check out: [The database models](/models/)
 
 ## dotenv configuration format
 
@@ -40,7 +44,16 @@ DB_NAME = ***
 DB_HOST = ***
 DB_PASSWORD = ***
 DB_PORT = ***
-DB_USER = ***
+DB_USERNAME = ***
 
 SERVER_PORT = ***
+NODE_ENV = production || development
+
+
+EMAIL_HOST = ***
+EMAIL_PORT = ***
+EMAIL_USER = ***
+EMAIL_PASS = ***
+OTP_EXPIRY_MINUTES = ***
+
 ```
