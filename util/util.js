@@ -5,6 +5,7 @@ import multer from "multer";
 const { verify } = jwtPkg;
 
 config();
+
 const database = new Sequelize({
   database: process.env.DB_NAME,
   host: process.env.DB_HOST,
@@ -13,6 +14,7 @@ const database = new Sequelize({
   port: process.env.DB_PORT,
   dialect: "postgres",
 });
+
 
 try {
   await database.authenticate();
@@ -104,6 +106,7 @@ const videoStorage = multer.diskStorage({
 });
 
 const videoUpload = multer({ storage: videoStorage });
+
 
 export {
   database,
