@@ -4,6 +4,9 @@ import jwtPkg from "jsonwebtoken";
 import multer from "multer";
 const { verify } = jwtPkg;
 
+import "pg";
+import "pg-hstore";
+
 config();
 
 const database = new Sequelize({
@@ -14,7 +17,6 @@ const database = new Sequelize({
   port: process.env.DB_PORT,
   dialect: "postgres",
 });
-
 
 try {
   await database.authenticate();
@@ -106,7 +108,6 @@ const videoStorage = multer.diskStorage({
 });
 
 const videoUpload = multer({ storage: videoStorage });
-
 
 export {
   database,
