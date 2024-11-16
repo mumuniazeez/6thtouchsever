@@ -1,5 +1,6 @@
-import { unlink } from "fs";
-import { db } from "../../util/util.js";
+import Courses from "../../models/courses.js";
+import { Op, Sequelize } from "sequelize";
+import Topics from "../../models/topics.js";
 
 export const createCourse = async (req, res) => {
   try {
@@ -8,13 +9,15 @@ export const createCourse = async (req, res) => {
 
     path = path.replace("public\\", "");
 
-    let query = `
-    INSERT INTO courses (title, description, thumbnail, price, category, id) VALUES ($1, $2, $3, $4, gen_random_uuid())
-    `;
-    let values = [title, description, path, price, category];
-    let result = await db.query(query, values);
+    let course = await Courses.create({
+      title,
+      description,
+      price,
+      category,
+      thumbnail: path,
+    });
 
-    if (result.rowCount < 1) {
+    if (!course) {
       if (req.file) unlink(req.file.path, (err) => err && console.log(err));
       return res.status(401).json({
         message: "Error creating course",
@@ -38,16 +41,28 @@ export const searchAllCourses = async (req, res) => {
     let { q: searchQuery } = req.query;
     searchQuery += "%";
 
-    let query = `SELECT * FROM courses WHERE title LIKE $1 OR description LIKE $1;`;
-    let values = [searchQuery];
-    let result = await db.query(query, values);
+    let courses = await Courses.findAll({
+      where: Sequelize.or(
+        {
+          title: {
+            [Op.iLike]: searchQuery,
+          },
+        },
+        {
+          description: {
+            [Op.iLike]: searchQuery,
+          },
+        }
+      ),
+      include: { model: Topics, as: "topics" },
+    });
 
-    if (result.rows.length < 1)
+    if (courses.length < 1)
       return res.status(404).json({
         message: "No result found for " + req.query.q,
       });
 
-    res.status(200).json(result.rows);
+    res.status(200).json(courses);
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -58,15 +73,16 @@ export const searchAllCourses = async (req, res) => {
 
 export const getAllCourse = async (req, res) => {
   try {
-    let query = `SELECT * FROM courses`;
-    let result = await db.query(query);
+    let courses = await Courses.findAll({
+      include: { model: Topics, as: "topics" },
+    });
 
-    if (result.rows.length < 1)
+    if (courses.length < 1)
       return res.status(404).json({
         message: "No course available",
       });
 
-    res.status(200).json(result.rows);
+    res.status(200).json(courses);
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -78,11 +94,15 @@ export const getAllCourse = async (req, res) => {
 export const getAllCourseByCategory = async (req, res) => {
   try {
     let { category } = req.params;
-    let query = `SELECT * FROM courses WHERE category = $1`;
-    let values = [category];
-    let result = await db.query(query, values);
 
-    if (result.rows.length < 1)
+    let courses = await Courses.findAll({
+      where: {
+        category,
+      },
+      include: { model: Topics, as: "topics" },
+    });
+
+    if (courses.length < 1)
       return res.status(404).json({
         message: "No course found under this category",
       });
@@ -104,28 +124,32 @@ export const createTopic = async (req, res) => {
 
     path = path.replace("public\\", "");
 
-    let query = `
-    INSERT INTO topics (title, note, description, video, courseid, id) VALUES ($1, $2, $3, $4, $5, gen_random_uuid())
-    `;
-    let values = [title, note, description, path, courseId];
-    let result = await db.query(query, values);
+    const topic = await Topics.create({
+      title,
+      note,
+      description,
+      courseId,
+      video: path,
+    });
 
-    if (result.rowCount < 1) {
+    await topic.save();
+
+    if (!topic) {
       if (req.file) unlink(req.file.path, (err) => err && console.log(err));
       return res.status(401).json({
-        message: "Error creating course",
+        message: "Error creating topic",
       });
     }
 
     res.status(200).json({
-      message: "Course created successfully",
+      message: "Topic created successfully",
     });
   } catch (error) {
     if (req.file) unlink(req.file.path, (err) => err && console.log(err));
     console.log(error);
     res.status(500).json({
       message:
-        "Error creating course, This may be because you passed an invalid courseId",
+        "Error creating topic, This may be because you passed an invalid courseId",
     });
   }
 };
@@ -136,10 +160,7 @@ export const editCourse = async (req, res) => {
     let { courseId } = req.params;
     let { title, description, price, category } = req.body;
 
-    let query = `SELECT * FROM courses WHERE id = $1`;
-    let values = [courseId];
-    let result = await db.query(query, values);
-    let course = result.rows[0];
+    let course = await Courses.findByPk(courseId);
     if (!course) {
       if (req.file) unlink(req.file.path, (err) => err && console.log(err));
       return res.status(404).json({
@@ -155,14 +176,15 @@ export const editCourse = async (req, res) => {
       path = course.thumbnail;
     }
 
-    query = `
-    UPDATE courses SET title = $1, description = $2, price = $3, thumbnail = $4 category = $5,
-    WHERE id = $6
-    `;
-    values = [title, description, price, path, category, courseId];
-    result = await db.query(query, values);
+    course.update({
+      title,
+      description,
+      price,
+      category,
+      thumbnail: path,
+    });
 
-    if (result.rowCount < 1) {
+    if (!course) {
       if (req.file) unlink(req.file.path, (err) => err && console.log(err));
       return res.status(401).json({
         message: "Error editing course",
@@ -184,13 +206,10 @@ export const editCourse = async (req, res) => {
 export const editTopic = async (req, res) => {
   try {
     let path;
-    let { courseId, topicId } = req.params;
+    let { topicId } = req.params;
     let { title, note, description } = req.body;
 
-    let query = `SELECT * FROM topics WHERE id = $1 AND courseid = $2`;
-    let values = [topicId, courseId];
-    let result = await db.query(query, values);
-    let topic = result.rows[0];
+    let topic = await Topics.findByPk(topicId);
     if (!topic) {
       if (req.file) unlink(req.file.path, (err) => err && console.log(err));
       return res.status(404).json({
@@ -206,14 +225,14 @@ export const editTopic = async (req, res) => {
       path = topic.video;
     }
 
-    query = `
-    UPDATE topics SET title = $1, description = $2, note = $3, video = $4
-    WHERE id = $5
-    `;
-    values = [title, description, note, path, topicId];
-    result = await db.query(query, values);
+    topic.update({
+      title,
+      description,
+      note,
+      video: path,
+    });
 
-    if (result.rowCount < 1) {
+    if (topic.isNewRecord) {
       if (req.file) unlink(req.file.path, (err) => err && console.log(err));
       return res.status(401).json({
         message: "Error editing topic",
@@ -235,22 +254,21 @@ export const editTopic = async (req, res) => {
 export const deleteCourse = async (req, res) => {
   try {
     let { courseId } = req.params;
-    let query = `SELECT video FROM topics WHERE courseid = $1
-    `;
-    let values = [courseId];
-    let result = await db.query(query, values);
 
-    result.rows.forEach((topic) => {
+    const topics = await Topics.findAll({
+      where: {
+        courseId,
+      },
+    });
+
+    topics.forEach((topic) => {
       unlink("public\\" + topic.video, (err) => err && console.log(err));
     });
 
-    query = `DELETE FROM courses WHERE id = $1
-    RETURNING thumbnail
-    `;
-    values = [courseId];
-    result = await db.query(query, values);
+    let course = await Courses.findByPk(courseId);
 
-    let { thumbnail } = result.rows[0];
+    let { thumbnail } = course;
+    await course.destroy({ force: true });
     unlink("public\\" + thumbnail, (err) => err && console.log(err));
 
     if (result.rowCount < 1)
@@ -271,20 +289,19 @@ export const deleteCourse = async (req, res) => {
 
 export const deleteTopic = async (req, res) => {
   try {
-    let { courseId, topicId } = req.params;
-    let query = `DELETE FROM topics WHERE id = $1 AND courseid = $2
-    RETURNING video
-    `;
-    let values = [topicId, courseId];
-    let result = await db.query(query, values);
+    let { topicId } = req.params;
 
-    let { video } = result.rows[0];
+    let topic = await Topics.findByPk(topicId);
+
+    if (!topic)
+      return res.status(404).json({
+        message: "Topic not found",
+      });
+
+    let { video } = topic;
     unlink("public\\" + video, (err) => err && console.log(err));
 
-    if (result.rowCount < 1)
-      return res.status(401).json({
-        message: "Error deleting topic",
-      });
+    await topic.destroy({ force: true });
 
     res.status(200).json({
       message: "Topic deleted successfully",
@@ -300,11 +317,18 @@ export const deleteTopic = async (req, res) => {
 export const publishCourse = async (req, res) => {
   try {
     let { courseId } = req.params;
-    let query = `UPDATE courses SET ispublic = true WHERE id = $1`;
-    let values = [courseId];
-    let result = await db.query(query, values);
+    let [affectRows] = await Courses.update(
+      {
+        isPublic: true,
+      },
+      {
+        where: {
+          id: courseId,
+        },
+      }
+    );
 
-    if (result.rowCount < 1)
+    if (affectRows === 0)
       return res.status(401).json({
         message: "Error publishing course",
       });
@@ -323,11 +347,18 @@ export const publishCourse = async (req, res) => {
 export const unpublishCourse = async (req, res) => {
   try {
     let { courseId } = req.params;
-    let query = `UPDATE courses SET ispublic = false WHERE id = $1`;
-    let values = [courseId];
-    let result = await db.query(query, values);
+    let [affectRows] = await Courses.update(
+      {
+        isPublic: false,
+      },
+      {
+        where: {
+          id: courseId,
+        },
+      }
+    );
 
-    if (result.rowCount < 1)
+    if (affectRows === 0)
       return res.status(401).json({
         message: "Error unpublishing course",
       });

@@ -1,26 +1,24 @@
-import { db } from "../../util/util.js";
-import pkg from "bcrypt";
-const { hash, compare } = pkg;
-import JWTPkg from "jsonwebtoken";
-const { sign } = JWTPkg;
+import { compareSync } from "bcrypt";
+import jwtPkg from "jsonwebtoken";
+const { sign } = jwtPkg;
+import Admins from "../../models/admins.js";
 
 export const addAdmin = async (req, res) => {
   try {
-    let { firstname, lastname, email, password } = req.body;
-
-    // hashing password
-    password = await hash(password, 10);
+    let { firstName, lastName, email, password } = req.body;
 
     // insert data for database
-    let query = `INSERT INTO admin (firstname, lastname, email, password, id ) VALUES($1, $2, $3, $4, gen_random_uuid())`;
-    let values = [firstname, lastname, email, password];
-    let result = await db.query(query, values);
+    let admin = await Admins.create({
+      firstName,
+      lastName,
+      email,
+      password,
+    });
 
     // check if it was successful
-
-    if (result.rowCount < 1)
-      return res.status(401).json({
-        message: "Error adding admin",
+    if (!admin)
+      return res.status(400).json({
+        message: "Error creating account",
       });
 
     res.status(201).json({
@@ -35,24 +33,26 @@ export const addAdmin = async (req, res) => {
   }
 };
 
+
 export const adminLogIn = async (req, res) => {
   try {
     let { adminEmail, adminPassword } = req.body;
 
-    // get the admin from the database using the email
-    let query = `SELECT id, email, password FROM admin WHERE email = $1`;
-    let values = [adminEmail];
-    let result = await db.query(query, values);
-    let admin = result.rows[0];
-    // check if the user exist
-    // if there no user
+    let admin = await Admins.findOne({
+      where: {
+        email: adminEmail,
+      },
+    });
+
+    // check if the admin exist
+    // if there no admin
     if (!admin)
       return res.status(401).json({
         message: "Unauthorize credentials",
       });
 
     // compare the passwords
-    let isPasswordCorrect = await compare(adminPassword, admin.password);
+    let isPasswordCorrect = compareSync(adminPassword, admin.password);
 
     // if password is not correct
     if (!isPasswordCorrect)
