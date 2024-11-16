@@ -19,7 +19,7 @@ app.use(cors());
 app.use(router);
 app.use("/admin", adminRouter);
 
-if (process.env.NODE_ENV === "production") await database.sync({ alter: true });
+if (process.env.NODE_ENV === "production") await migrate()
 
 app.listen(port, () => {
   console.log(`Server running on  http://localhost:${port}`);

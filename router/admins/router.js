@@ -1,6 +1,10 @@
 import { Router } from "express";
 import { addAdmin, adminLogIn } from "../../controllers/admins/auth.js";
-import { getAdminProfile } from "../../controllers/admins/admin.js";
+import {
+  getAdminProfile,
+  editAdminProfile,
+  deleteAdminProfile,
+} from "../../controllers/admins/admin.js";
 import { authenticateAdmin } from "../../util/util.js";
 import {
   createCourse,
@@ -26,6 +30,8 @@ router.post("/auth/addAdmin", authenticateAdmin, addAdmin);
 
 // admin profile
 router.get("/me", authenticateAdmin, getAdminProfile);
+router.patch("/me", authenticateAdmin, editAdminProfile);
+router.delete("/me", authenticateAdmin, deleteAdminProfile);
 
 // admin courses route
 router.post(

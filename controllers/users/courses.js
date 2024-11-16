@@ -8,6 +8,7 @@ export const getAllPublishedCourse = async (req, res) => {
       where: {
         isPublic: true,
       },
+      include: { model: Topics, as: "topics" },
     });
 
     if (courses.length < 1)
@@ -32,6 +33,7 @@ export const getAllPublishedCourseByCategory = async (req, res) => {
         isPublic: true,
         category,
       },
+      include: { model: Topics, as: "topics" },
     });
 
     if (courses.length < 1)
@@ -52,7 +54,9 @@ export const getCourseByID = async (req, res) => {
   try {
     let { courseId } = req.params;
 
-    let course = await Courses.findByPk(courseId);
+    let course = await Courses.findByPk(courseId, {
+      include: { model: Topics, as: "topics" },
+    });
     if (!course)
       return res.status(404).json({
         message: "Course not available or may be deleted",
@@ -83,6 +87,7 @@ export const getCourseTopics = async (req, res) => {
       where: {
         courseId,
       },
+      include: { model: Courses, as: "course" },
     });
 
     if (topics.length < 1)
@@ -120,6 +125,7 @@ export const searchPublishedCourses = async (req, res) => {
           }
         )
       ),
+      include: { model: Topics, as: "topics" },
     });
     if (courses.length < 1)
       return res.status(404).json({
@@ -139,7 +145,9 @@ export const getTopicByID = async (req, res) => {
   try {
     let { topicId } = req.params;
 
-    let topic = Topics.findByPk(topicId);
+    let topic = Topics.findByPk(topicId, {
+      include: { model: Courses, as: "course" },
+    });
     if (!topic)
       return res.status(404).json({
         message: "Topic not available or may be deleted",
@@ -158,7 +166,9 @@ export const getMyCourses = async (req, res) => {
   try {
     let { id } = req.user;
 
-    let courses = await Courses.findAll();
+    let courses = await Courses.findAll({
+      include: { model: Topics, as: "topics" },
+    });
     if (courses.length < 1)
       return res.status(404).json({
         message: "You haven't enrolled to any course.",

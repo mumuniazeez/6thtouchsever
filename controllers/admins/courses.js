@@ -54,7 +54,7 @@ export const searchAllCourses = async (req, res) => {
           },
         }
       ),
-      include: Topics,
+      include: { model: Topics, as: "topics" },
     });
 
     if (courses.length < 1)
@@ -73,7 +73,9 @@ export const searchAllCourses = async (req, res) => {
 
 export const getAllCourse = async (req, res) => {
   try {
-    let courses = await Courses.findAll();
+    let courses = await Courses.findAll({
+      include: { model: Topics, as: "topics" },
+    });
 
     if (courses.length < 1)
       return res.status(404).json({
@@ -97,6 +99,7 @@ export const getAllCourseByCategory = async (req, res) => {
       where: {
         category,
       },
+      include: { model: Topics, as: "topics" },
     });
 
     if (courses.length < 1)
