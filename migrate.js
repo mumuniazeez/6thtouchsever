@@ -11,8 +11,6 @@ const migrate = async () => {
 
   await database.sync({ alter: true });
   console.log("\n✅ All model synced");
-
-  process.exit();
 };
 
 // script.js
