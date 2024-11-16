@@ -6,6 +6,7 @@ const migrate = async () => {
   Courses.hasMany(Topics, {
     onDelete: "CASCADE",
     onUpdate: "NO ACTION",
+    as: "topics",
   });
   Topics.belongsTo(Courses);
 
