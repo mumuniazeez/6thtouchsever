@@ -15,6 +15,19 @@ const migrate = async () => {
   process.exit();
 };
 
-migrate();
+// script.js
+const args = process.argv.slice(2); // Get all arguments after the first two
+
+const flags = {};
+args.forEach((arg) => {
+  const [key, value] = arg.split("=");
+  if (value) {
+    flags[key.replace("--", "")] = value;
+  } else {
+    flags[key.replace("--", "")] = true; // Flag without value
+  }
+});
+
+if (flags.development) await migrate();
 
 export default migrate;
