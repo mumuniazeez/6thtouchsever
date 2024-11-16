@@ -4,6 +4,7 @@ import cors from "cors";
 import router from "./router/users/router.js";
 import adminRouter from "./router/admins/router.js";
 import { database } from "./util/util.js";
+import migrate from "./migrate.js";
 
 config();
 const app = express();
@@ -19,7 +20,7 @@ app.use(cors());
 app.use(router);
 app.use("/admin", adminRouter);
 
-if (process.env.NODE_ENV === "production") await migrate()
+if (process.env.NODE_ENV === "production") await migrate();
 
 app.listen(port, () => {
   console.log(`Server running on  http://localhost:${port}`);
