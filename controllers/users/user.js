@@ -61,9 +61,8 @@ export const deleteMyProfile = async (req, res) => {
     let { id } = req.user;
 
     let deletedRows = await Users.destroy({
-      where: {
-        id,
-      },
+      where: { id },
+      force: true,
     });
 
     if (deletedRows < 1)
