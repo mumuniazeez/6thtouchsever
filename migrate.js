@@ -28,7 +28,6 @@ args.forEach((arg) => {
   }
 });
 
-console.log(flags);
 if (flags.development) await migrate();
 
 export default migrate;
