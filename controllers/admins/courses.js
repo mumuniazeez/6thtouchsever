@@ -1,34 +1,40 @@
 import Courses from "../../models/courses.js";
+import { unlink } from "fs";
 import { Op, Sequelize } from "sequelize";
 import Topics from "../../models/topics.js";
+import { put, del } from "@vercel/blob";
 
 export const createCourse = async (req, res) => {
   try {
-    let { path } = req.file;
-    let { title, description, price, category } = req.body;
+    let { buffer, mimetype } = req.file;
+    let { title, description, price, category, duration } = req.body;
 
-    path = path.replace("public\\", "");
+    const { url } = await put(`/thumbnails/thumbnail`, buffer, {
+      contentType: mimetype,
+      access: "public",
+    });
 
     let course = await Courses.create({
       title,
       description,
       price,
       category,
-      thumbnail: path,
+      duration,
+      thumbnail: url,
     });
 
     if (!course) {
-      if (req.file) unlink(req.file.path, (err) => err && console.log(err));
+      // if (req.file) unlink(req.file.path, (err) => err && console.log(err));
       return res.status(401).json({
         message: "Error creating course",
       });
     }
 
-    res.status(200).json({
+    res.status(201).json({
       message: "Course created successfully",
     });
   } catch (error) {
-    if (req.file) unlink(req.file.path, (err) => err && console.log(err));
+    // if (req.file) unlink(req.file.path, (err) => err && console.log(err));
     console.log(error);
     res.status(500).json({
       message: "Error creating course",
@@ -162,16 +168,21 @@ export const editCourse = async (req, res) => {
 
     let course = await Courses.findByPk(courseId);
     if (!course) {
-      if (req.file) unlink(req.file.path, (err) => err && console.log(err));
       return res.status(404).json({
         message: "Course not available or may be deleted",
       });
     }
 
     if (req.file) {
-      ({ path } = req.file);
-      path = path.replace("public\\", "");
-      unlink("public\\" + course.thumbnail, (err) => err && console.log(err));
+      await del(course.thumbnail);
+
+      const { buffer, mimetype } = req.file;
+      path = await put(`/thumbnails/thumbnail`, buffer, {
+        contentType: mimetype,
+        access: "public",
+      });
+
+      path = path.url;
     } else {
       path = course.thumbnail;
     }
@@ -185,7 +196,6 @@ export const editCourse = async (req, res) => {
     });
 
     if (!course) {
-      if (req.file) unlink(req.file.path, (err) => err && console.log(err));
       return res.status(401).json({
         message: "Error editing course",
       });
@@ -195,7 +205,6 @@ export const editCourse = async (req, res) => {
       message: "Course edited successfully",
     });
   } catch (error) {
-    if (req.file) unlink(req.file.path, (err) => err && console.log(err));
     console.log(error);
     res.status(500).json({
       message: "Error editing course",
@@ -261,20 +270,20 @@ export const deleteCourse = async (req, res) => {
       },
     });
 
-    topics.forEach((topic) => {
-      unlink("public\\" + topic.video, (err) => err && console.log(err));
+    topics.forEach(async (topic) => {
+      await del(topic.video);
     });
 
     let course = await Courses.findByPk(courseId);
 
+    if (!course)
+      return res.status(401).json({
+        message: "Course not found",
+      });
+
     let { thumbnail } = course;
     await course.destroy({ force: true });
-    unlink("public\\" + thumbnail, (err) => err && console.log(err));
-
-    if (result.rowCount < 1)
-      return res.status(401).json({
-        message: "Error deleting course",
-      });
+    await del(thumbnail);
 
     res.status(200).json({
       message: "Course deleted successfully",
@@ -299,9 +308,8 @@ export const deleteTopic = async (req, res) => {
       });
 
     let { video } = topic;
-    unlink("public\\" + video, (err) => err && console.log(err));
-
     await topic.destroy({ force: true });
+    await del(video);
 
     res.status(200).json({
       message: "Topic deleted successfully",
@@ -319,7 +327,7 @@ export const publishCourse = async (req, res) => {
     let { courseId } = req.params;
     let [affectRows] = await Courses.update(
       {
-        isPublic: true,
+        isPublished: true,
       },
       {
         where: {
@@ -349,7 +357,7 @@ export const unpublishCourse = async (req, res) => {
     let { courseId } = req.params;
     let [affectRows] = await Courses.update(
       {
-        isPublic: false,
+        isPublished: false,
       },
       {
         where: {

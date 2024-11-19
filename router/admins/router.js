@@ -5,7 +5,7 @@ import {
   editAdminProfile,
   deleteAdminProfile,
 } from "../../controllers/admins/admin.js";
-import { authenticateAdmin } from "../../util/util.js";
+import { authenticateAdmin, memoryUpload } from "../../util/util.js";
 import {
   createCourse,
   createTopic,
@@ -19,7 +19,6 @@ import {
   searchAllCourses,
   unpublishCourse,
 } from "../../controllers/admins/courses.js";
-import { thumbnailUpload, videoUpload } from "../../util/util.js";
 
 let router = Router();
 
@@ -37,7 +36,7 @@ router.delete("/me", authenticateAdmin, deleteAdminProfile);
 router.post(
   "/courses/create",
   authenticateAdmin,
-  thumbnailUpload.single("thumbnail"),
+  memoryUpload.single("thumbnail"),
   createCourse
 );
 
@@ -52,21 +51,21 @@ router.get(
 router.post(
   "/courses/:courseId/topics/add",
   authenticateAdmin,
-  videoUpload.single("video"),
+  memoryUpload.single("video"),
   createTopic
 );
 
 router.patch(
   "/courses/:courseId/edit",
   authenticateAdmin,
-  thumbnailUpload.single("thumbnail"),
+  memoryUpload.single("thumbnail"),
   editCourse
 );
 
 router.patch(
   "/courses/:courseId/topics/:topicId/edit",
   authenticateAdmin,
-  videoUpload.single("video"),
+  memoryUpload.single("video"),
   editTopic
 );
 

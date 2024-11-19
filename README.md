@@ -35,16 +35,26 @@ For information on the database structure
 
 Check out: [The database models](/models/)
 
+Once you have connected to your database to migrate the models to your database run `node migrate --development` in your terminal
+
+If you create a model that have relations, create the relations in [migrate.js](/migrate.js) inside the migrate function then run `node migrate --development` in your terminal
+
 ## dotenv configuration format
 
 ```env
 JWT_SECRET = ***
+
 
 DB_NAME = ***
 DB_HOST = ***
 DB_PASSWORD = ***
 DB_PORT = ***
 DB_USERNAME = ***
+DB_URI = ***
+
+
+BLOB_READ_WRITE_TOKEN= vercel_blob_rw_QGDTzkiTUZSwVibv_Af6DovL1wWiCyCiOG95QyLBB6uP5f6
+
 
 SERVER_PORT = ***
 NODE_ENV = production || development

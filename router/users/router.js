@@ -5,6 +5,7 @@ import {
   requestReset,
   verifyOtp,
   resetPassword,
+  changePassword
 } from "../../controllers/users/auth.js";
 import { authenticateUser } from "../../util/util.js";
 import {
@@ -30,6 +31,7 @@ router.post("/auth/login", login);
 router.post("/auth/request-reset", requestReset);
 router.post("/auth/verify-otp", verifyOtp);
 router.post("/auth/reset-password", resetPassword);
+router.patch("/auth/change-password", authenticateUser, changePassword)
 
 // user routes
 router.get("/user/me", authenticateUser, getMyProfile);
