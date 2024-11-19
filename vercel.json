@@ -11,5 +11,11 @@
       "src": "/(.*)",
       "dest": "/"
     }
-  ]
+  ],
+  "functions": {
+    "index.js": {
+      "maxDuration": 10, // Maximum function execution time in seconds
+      "maxMemory": 1024  // Maximum memory in MB
+    }
+  }
 }
