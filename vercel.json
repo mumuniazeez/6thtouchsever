@@ -11,11 +11,5 @@
       "src": "/(.*)",
       "dest": "/"
     }
-  ],
-  "functions": {
-    "index": {
-      "maxDuration": 10,
-      "memory": 1024   
-    }
-  }
+  ]
 }
