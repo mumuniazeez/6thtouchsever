@@ -13,9 +13,9 @@
     }
   ],
   "functions": {
-    "index.js": {
+    "index": {
       "maxDuration": 10,
-      "maxMemory": 1024 
+      "memory": 1024   
     }
   }
 }
