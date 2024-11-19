@@ -33,16 +33,18 @@ export const addAdmin = async (req, res) => {
   }
 };
 
-
 export const adminLogIn = async (req, res) => {
   try {
     let { adminEmail, adminPassword } = req.body;
+    console.log(adminEmail);
 
     let admin = await Admins.findOne({
       where: {
         email: adminEmail,
       },
     });
+
+    console.log(admin);
 
     // check if the admin exist
     // if there no admin

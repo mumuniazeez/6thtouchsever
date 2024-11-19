@@ -98,11 +98,7 @@ export const changePassword = async (req, res) => {
     let { currentPassword, newPassword } = req.body;
 
     // getting the user with the email provided
-    const user = await Users.findOne({
-      where: {
-        id,
-      },
-    });
+    const user = await Users.findByPk(id);
 
     // checking if the user exist
     if (!user)
@@ -134,8 +130,6 @@ export const changePassword = async (req, res) => {
     });
   }
 };
-
-// Mock user database
 
 // Configure email transporter
 const transporter = nodemailer.createTransport({

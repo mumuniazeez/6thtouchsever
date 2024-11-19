@@ -13,7 +13,7 @@ const Courses = database.define("Courses", {
     allowNull: false,
   },
   description: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(500),
     allowNull: false,
   },
   subscribers: {
@@ -24,7 +24,7 @@ const Courses = database.define("Courses", {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  isPublic: {
+  isPublished: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
     defaultValue: false,
@@ -41,6 +41,11 @@ const Courses = database.define("Courses", {
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 0,
+  },
+  duration: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: "",
   },
 });
 

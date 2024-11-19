@@ -6,7 +6,7 @@ export const getAllPublishedCourse = async (req, res) => {
   try {
     let courses = await Courses.findAll({
       where: {
-        isPublic: true,
+        isPublished: true,
       },
       include: { model: Topics, as: "topics" },
     });
@@ -30,7 +30,7 @@ export const getAllPublishedCourseByCategory = async (req, res) => {
     let { category } = req.params;
     let courses = await Courses.findAll({
       where: {
-        isPublic: true,
+        isPublished: true,
         category,
       },
       include: { model: Topics, as: "topics" },
@@ -111,7 +111,7 @@ export const searchPublishedCourses = async (req, res) => {
 
     let courses = await Courses.findAll({
       where: Sequelize.and(
-        { isPublic: true },
+        { isPublished: true },
         Sequelize.or(
           {
             title: {

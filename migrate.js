@@ -1,8 +1,18 @@
 import Courses from "./models/courses.js";
 import Topics from "./models/topics.js";
+import Reports from "./models/reports.js";
+import Users from "./models/users.js";
 import { database } from "./util/util.js";
+import { hashSync } from "bcrypt";
 
 const migrate = async () => {
+  Users.hasOne(Reports, {
+    onDelete: "SET NULL",
+    onUpdate: "NO ACTION",
+    as: "reports",
+  });
+  Reports.belongsTo(Users);
+
   Courses.hasMany(Topics, {
     onDelete: "CASCADE",
     onUpdate: "NO ACTION",
