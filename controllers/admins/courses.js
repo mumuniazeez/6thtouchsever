@@ -124,18 +124,21 @@ export const getAllCourseByCategory = async (req, res) => {
 
 export const createTopic = async (req, res) => {
   try {
-    let { path } = req.file;
     let { courseId } = req.params;
     let { title, note, description } = req.body;
+    let { buffer, mimetype } = req.file;
 
-    path = path.replace("public\\", "");
+    const { url } = await put(`/videos/video`, buffer, {
+      contentType: mimetype,
+      access: "public",
+    });
 
     const topic = await Topics.create({
       title,
       note,
       description,
       courseId,
-      video: path,
+      video: url,
     });
 
     await topic.save();
@@ -164,7 +167,7 @@ export const editCourse = async (req, res) => {
   try {
     let path;
     let { courseId } = req.params;
-    let { title, description, price, category } = req.body;
+    let { title, description, price, category, duration } = req.body;
 
     let course = await Courses.findByPk(courseId);
     if (!course) {
@@ -192,6 +195,7 @@ export const editCourse = async (req, res) => {
       description,
       price,
       category,
+      duration,
       thumbnail: path,
     });
 
@@ -227,9 +231,15 @@ export const editTopic = async (req, res) => {
     }
 
     if (req.file) {
-      ({ path } = req.file);
-      path = path.replace("public\\", "");
-      unlink("public\\" + topic.video, (err) => err && console.log(err));
+      await del(topic.video);
+
+      const { buffer, mimetype } = req.file;
+      path = await put(`/videos/video`, buffer, {
+        contentType: mimetype,
+        access: "public",
+      });
+
+      path = path.url;
     } else {
       path = topic.video;
     }

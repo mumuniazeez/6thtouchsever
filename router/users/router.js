@@ -28,10 +28,10 @@ const router = Router();
 // authentication routes
 router.post("/auth/signup", signUp);
 router.post("/auth/login", login);
-router.post("/auth/request-reset", requestReset);
-router.post("/auth/verify-otp", verifyOtp);
-router.post("/auth/reset-password", resetPassword);
-router.patch("/auth/change-password", authenticateUser, changePassword)
+router.post("/auth/requestReset", requestReset);
+router.post("/auth/verifyOTP", verifyOtp);
+router.post("/auth/resetPassword", resetPassword);
+router.patch("/auth/changePassword", authenticateUser, changePassword)
 
 // user routes
 router.get("/user/me", authenticateUser, getMyProfile);

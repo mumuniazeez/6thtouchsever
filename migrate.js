@@ -6,7 +6,7 @@ import { database } from "./util/util.js";
 import { hashSync } from "bcrypt";
 
 const migrate = async () => {
-  Users.hasMany(Reports, {
+  Users.hasOne(Reports, {
     onDelete: "SET NULL",
     onUpdate: "NO ACTION",
     as: "reports",
