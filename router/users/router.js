@@ -38,7 +38,7 @@ router.patch("/auth/changePassword", authenticateUser, changePassword);
 router.get("/user/me", authenticateUser, getMyProfile);
 router.patch("/user/me", authenticateUser, editMyProfile);
 router.delete("/user/me", authenticateUser, deleteMyProfile);
-router.delete(
+router.patch(
   "/user/changeAvatar",
   authenticateUser,
   memoryUpload.single("avatar"),
