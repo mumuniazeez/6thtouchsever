@@ -211,22 +211,6 @@ export const requestPasswordReset = async (req, res) => {
       color: #4CAF50;
       font-weight: bold;
     }
-    .copy-btn {
-      display: block;
-      margin: 10px auto;
-      padding: 10px 15px;
-      font-size: 14px;
-      background-color: #4CAF50;
-      color: white;
-      text-decoration: none;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      text-align: center;
-    }
-    .copy-btn:hover {
-      background-color: #45a049;
-    }
     .footer {
       background-color: #f9f9f9;
       color: #888;
@@ -246,8 +230,9 @@ export const requestPasswordReset = async (req, res) => {
       <p>
         You recently requested to verify your account. Use the code below to complete the verification process.
       </p>
-      <div class="otp-box" id="otp">${otp}</div>
-      <button class="copy-btn" onclick="copyToClipboard()">Copy OTP</button>
+      <div class="otp-box">
+        ${otp}
+      </div>
       <p>
         This OTP is valid for the next <strong>10 minutes</strong>. If you didn’t request this code, you can safely ignore this email.
         <br />
@@ -260,17 +245,6 @@ export const requestPasswordReset = async (req, res) => {
       © 2024 6thtouch | All rights reserved.
     </div>
   </div>
-  <script>
-    function copyToClipboard() {
-      const otpElement = document.getElementById('otp');
-      const otpText = otpElement.innerText;
-      navigator.clipboard.writeText(otpText).then(() => {
-        alert('OTP copied to clipboard!');
-      }).catch(err => {
-        alert('Failed to copy OTP. Please try again.');
-      });
-    }
-  </script>
 </body>
 </html>
 `,
