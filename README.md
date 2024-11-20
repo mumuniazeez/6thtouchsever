@@ -53,7 +53,7 @@ DB_USERNAME = ***
 DB_URI = ***
 
 
-BLOB_READ_WRITE_TOKEN= vercel_blob_rw_QGDTzkiTUZSwVibv_Af6DovL1wWiCyCiOG95QyLBB6uP5f6
+BLOB_READ_WRITE_TOKEN = ***
 
 
 SERVER_PORT = ***
@@ -64,6 +64,5 @@ EMAIL_HOST = ***
 EMAIL_PORT = ***
 EMAIL_USER = ***
 EMAIL_PASS = ***
-OTP_EXPIRY_MINUTES = ***
 
 ```
