@@ -3,7 +3,6 @@ import Topics from "./models/topics.js";
 import Reports from "./models/reports.js";
 import Users from "./models/users.js";
 import { database } from "./util/util.js";
-import { hashSync } from "bcrypt";
 
 const migrate = async () => {
   Users.hasOne(Reports, {

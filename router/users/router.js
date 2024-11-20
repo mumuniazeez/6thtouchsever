@@ -5,13 +5,14 @@ import {
   requestReset,
   verifyOtp,
   resetPassword,
-  changePassword
+  changePassword,
 } from "../../controllers/users/auth.js";
-import { authenticateUser } from "../../util/util.js";
+import { authenticateUser, memoryUpload } from "../../util/util.js";
 import {
   deleteMyProfile,
   editMyProfile,
   getMyProfile,
+  changeAvatar,
 } from "../../controllers/users/user.js";
 import {
   getAllPublishedCourse,
@@ -31,12 +32,18 @@ router.post("/auth/login", login);
 router.post("/auth/requestReset", requestReset);
 router.post("/auth/verifyOTP", verifyOtp);
 router.post("/auth/resetPassword", resetPassword);
-router.patch("/auth/changePassword", authenticateUser, changePassword)
+router.patch("/auth/changePassword", authenticateUser, changePassword);
 
 // user routes
 router.get("/user/me", authenticateUser, getMyProfile);
 router.patch("/user/me", authenticateUser, editMyProfile);
 router.delete("/user/me", authenticateUser, deleteMyProfile);
+router.delete(
+  "/user/changeAvatar",
+  authenticateUser,
+  memoryUpload.single("avatar"),
+  changeAvatar
+);
 
 // courses routes
 router.get("/courses", getAllPublishedCourse);

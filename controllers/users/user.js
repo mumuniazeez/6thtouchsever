@@ -1,4 +1,5 @@
 import Users from "../../models/users.js";
+import { del, put } from "@vercel/blob";
 
 export const getMyProfile = async (req, res) => {
   try {
@@ -70,6 +71,38 @@ export const deleteMyProfile = async (req, res) => {
         message: "User account not deleted",
       });
 
+    res.status(200).json({
+      message: "User account deleted successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Error deleting profile",
+      error,
+    });
+  }
+};
+
+export const changeAvatar = async (req, res) => {
+  try {
+    let { id } = req.user;
+    let { buffer, mimetype } = req.file;
+
+    let user = await Users.findByPk(id);
+
+    if (!user)
+      return res.status(404).json({
+        message: "User account not found",
+      });
+
+    if (user.avatar) del(user.avatar);
+    const { url } = await put(`/avatars/users/avatar`, buffer, {
+      contentType: mimetype,
+      access: "public",
+    });
+    await user.update({
+      avatar: url,
+    });
     res.status(200).json({
       message: "User account deleted successfully",
     });

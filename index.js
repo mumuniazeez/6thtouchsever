@@ -24,6 +24,8 @@ app.use((req, res, next) => {
 });
 app.use(router);
 app.use("/admin", adminRouter);
+
+
 await migrate();
 
 app.listen(port, () => {
