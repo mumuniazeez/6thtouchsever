@@ -2,7 +2,7 @@ import { Router } from "express";
 import {
   login,
   signUp,
-  requestReset,
+  requestPasswordReset,
   verifyOtp,
   resetPassword,
   changePassword,
@@ -29,10 +29,10 @@ const router = Router();
 // authentication routes
 router.post("/auth/signup", signUp);
 router.post("/auth/login", login);
-router.post("/auth/requestReset", requestReset);
-router.post("/auth/verifyOTP", verifyOtp);
-router.post("/auth/resetPassword", resetPassword);
 router.patch("/auth/changePassword", authenticateUser, changePassword);
+router.post("/auth/requestReset", requestPasswordReset);
+router.post("/auth/verifyOTP", verifyOtp);
+router.patch("/auth/resetPassword", resetPassword);
 
 // user routes
 router.get("/user/me", authenticateUser, getMyProfile);
