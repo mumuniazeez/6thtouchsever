@@ -104,7 +104,7 @@ export const changeAvatar = async (req, res) => {
       avatar: url,
     });
     res.status(200).json({
-      message: "User account deleted successfully",
+      message: "Avatar successfully uploaded",
     });
   } catch (error) {
     console.log(error);
