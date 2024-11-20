@@ -2,6 +2,7 @@ import Courses from "./models/courses.js";
 import Topics from "./models/topics.js";
 import Reports from "./models/reports.js";
 import Users from "./models/users.js";
+import Otp from "./models/otp.js";
 import { database } from "./util/util.js";
 
 const migrate = async () => {
@@ -11,6 +12,7 @@ const migrate = async () => {
     as: "reports",
   });
   Reports.belongsTo(Users);
+
 
   Courses.hasMany(Topics, {
     onDelete: "CASCADE",

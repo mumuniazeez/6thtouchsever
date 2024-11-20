@@ -1,9 +1,11 @@
 import { compareSync } from "bcrypt";
 import Users from "../../models/users.js";
+import Otp from "../../models/otp.js";
 import jwtPkg from "jsonwebtoken";
 const { sign } = jwtPkg;
 import { config } from "dotenv";
 config();
+import crypto from "crypto";
 
 import nodemailer from "nodemailer";
 import { TOTP, Secret } from "otpauth";
@@ -13,7 +15,6 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const users = {};
-
 
 export const signUp = async (req, res) => {
   try {
@@ -131,120 +132,152 @@ export const changePassword = async (req, res) => {
   }
 };
 
-// Configure email transporter
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: process.env.EMAIL_PORT,
-  secure: process.env.EMAIL_PORT === 465, // use TLS
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  socketTimeout: 60000, // 1 minute timeout for the socket
-  connectionTimeout: 60000, // 30 seconds for the connection timeout
-});
-
-const sendEmailWithRetry = async (mailOptions, attempts = 3, res) => {
+export const requestPasswordReset = async (req, res) => {
   try {
-    await transporter.sendMail(mailOptions);
-    console.log("Email sent successfully");
+    const { email } = req.body;
+
+    // Find user
+    const user = await Users.findOne({ where: { email } });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Generate OTP
+    const otp = crypto.randomInt(100000, 999999); // 6-digit OTP
+    const expiration = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+    // Save OTP to database
+    await Otp.create({ email, otp, expiresAt: expiration });
+
+    console.log(otp);
+    // Send OTP via email (example using nodemailer)
+    const transporter = nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: process.env.EMAIL_PORT,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+    await transporter.sendMail({
+      // from: `6thtouch - <${process.env.EMAIL_USER}>`,
+      from: process.env.EMAIL_USER,
+      sender: `6thtouch - <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: `${otp} - 6thtouch | OTP Code message`,
+      html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+    }
+    .email-container {
+      max-width: 600px;
+      margin: 20px auto;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+    .header {
+      background-color: #4CAF50;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+    .content {
+      padding: 20px;
+    }
+    .content p {
+      font-size: 16px;
+      color: #333;
+      line-height: 1.5;
+    }
+    .otp-box {
+      text-align: center;
+      background-color: #f4f4f9;
+      border: 1px dashed #4CAF50;
+      margin: 20px 0;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 24px;
+      color: #4CAF50;
+      font-weight: bold;
+    }
+    .footer {
+      background-color: #f9f9f9;
+      color: #888;
+      text-align: center;
+      padding: 10px;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <div class="header">
+      <h1>6thtouch | OTP Code</h1>
+    </div>
+    <div class="content">
+      <p>Hi <strong>${user.firstName} ${user.lastName}</strong>,</p>
+      <p>
+        You recently requested to verify your account. Use the code below to complete the verification process.
+      </p>
+      <div class="otp-box">
+        ${otp}
+      </div>
+      <p>
+        This OTP is valid for the next <strong>10 minutes</strong>. If you didn’t request this code, you can safely ignore this email.
+        <br />
+        <strong>Don't share your OTP with anyone.</strong>
+      </p>
+      <p>Thank you,</p>
+      <p>The 6thtouch Team</p>
+    </div>
+    <div class="footer">
+      © 2024 6thtouch | All rights reserved.
+    </div>
+  </div>
+</body>
+</html>
+`,
+    });
+
+    res.json({ message: "OTP sent successfully" });
   } catch (error) {
     console.log(error);
-    if (attempts > 0) {
-      console.log(`Retrying... Attempts left: ${attempts}`);
-      setTimeout(
-        () => sendEmailWithRetry(mailOptions, attempts - 1, res),
-        3000
-      ); // Retry after 3 seconds
-    } else {
-      console.error("Failed to send email after retries:", error);
-      res.status(500).send("Failed to send OTP. Please try again.");
-    }
+    res.status(500).json({
+      message: "Error requesting reset password",
+      error,
+    });
   }
 };
 
-export const requestReset = async (req, res) => {
-  const { email } = req.body;
-
-  const user = await Users.findOne({
-    where: { email },
-  });
-  if (!user) return res.status(404).send("User not found.");
-
-  const totp = new TOTP({
-    issuer: "YourCompany",
-    label: email,
-    algorithm: "SHA1",
-    digits: 6,
-    period: process.env.OTP_EXPIRY_MINUTES * 60,
-    secret: new Secret(),
-  });
-
-  const otp = totp.generate();
-  user.otp = otp;
-  user.otpExpiry = Date.now() + process.env.OTP_EXPIRY_MINUTES * 60000;
-
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: "Password Reset OTP",
-    html: `
-           nn
-            
-        `,
-  };
-
-  try {
-    await transporter.sendMail(mailOptions);
-    res.status(200).send("OTP sent to your email.");
-  } catch (error) {
-    console.error("Error sending email:", error);
-    let attempts = 3;
-    sendEmailWithRetry(mailOptions, 3, res);
-  }
-};
-
-export const verifyOtp = (req, res) => {
+export const verifyOtp = async (req, res) => {
   const { email, otp } = req.body;
-  if (!email || !otp)
-    return res.status(400).send("Email and OTP are required.");
 
-  const user = users[email];
-  if (!user || !user.otp) return res.status(404).send("OTP request not found.");
-
-  if (user.otpExpiry < Date.now())
-    return res.status(400).send("OTP has expired.");
-
-  const totp = new TOTP({
-    issuer: "YourCompany",
-    label: email,
-    algorithm: "SHA1",
-    digits: 6,
-    period: process.env.OTP_EXPIRY_MINUTES * 60,
-    secret: Secret.fromB32(user.otp),
-  });
-
-  if (totp.validate({ token: otp }) !== null) {
-    user.isOtpVerified = true;
-    delete user.otp;
-    delete user.otpExpiry;
-    res.status(200).send("OTP verified successfully.");
-  } else {
-    res.status(400).send("Invalid OTP.");
+  // Find OTP record
+  const otpRecord = await Otp.findOne({ where: { email, otp } });
+  if (!otpRecord || otpRecord.expiresAt < Date.now()) {
+    return res.status(400).json({ message: "Invalid or expired OTP" });
   }
+  await otpRecord.destroy({ force: true });
+
+  res.json({ message: "OTP verified successfully" });
 };
 
 export const resetPassword = async (req, res) => {
   const { email, newPassword } = req.body;
-  if (!email || !newPassword)
-    return res.status(400).send("Email and new password are required.");
 
-  const user = users[email];
-  if (!user || !user.isOtpVerified)
-    return res.status(403).send("OTP verification required.");
+  // Update user's password
+  await Users.update({ password: newPassword }, { where: { email } });
 
-  const hashedPassword = await bcrypt.hash(newPassword, 10);
-  user.password = hashedPassword;
-  user.isOtpVerified = false;
-  res.status(200).send("Password reset successful.");
+  res.json({ message: "Password reset successfully" });
 };
