@@ -3,6 +3,8 @@ import { Sequelize } from "sequelize";
 import jwtPkg from "jsonwebtoken";
 import multer from "multer";
 const { verify } = jwtPkg;
+import nodemailer from "nodemailer";
+
 import "pg";
 import "pg-hstore";
 
@@ -99,12 +101,19 @@ const authenticateAdmin = (req, res, next) => {
 const memoryStorage = multer.memoryStorage();
 const memoryUpload = multer({ storage: memoryStorage });
 
-
+ const transporter = nodemailer.createTransport({
+   host: process.env.EMAIL_HOST,
+   port: process.env.EMAIL_PORT,
+   auth: {
+     user: process.env.EMAIL_USER,
+     pass: process.env.EMAIL_PASS,
+   },
+ });
 
 export {
   database,
   authenticateUser,
   authenticateAdmin,
   memoryUpload,
-
+  transporter,
 };
