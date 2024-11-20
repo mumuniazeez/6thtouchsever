@@ -9,6 +9,7 @@ const Users = database.define("Users", {
     allowNull: false,
     defaultValue: DataTypes.UUIDV4,
   },
+  avatar: DataTypes.STRING,
   firstName: {
     type: DataTypes.STRING,
     allowNull: false,
