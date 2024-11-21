@@ -225,7 +225,7 @@ export const changePassword = async (req, res) => {
   }
 };
 
-export const requestPasswordReset = async (req, res) => {
+export const requestOTP = async (req, res) => {
   try {
     const { email } = req.body;
 
@@ -345,7 +345,7 @@ export const requestPasswordReset = async (req, res) => {
   }
 };
 
-export const verifyOtp = async (req, res) => {
+export const verifyOTP = async (req, res) => {
   const { email, otp } = req.body;
 
   // Find OTP record
