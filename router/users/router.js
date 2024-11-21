@@ -2,8 +2,8 @@ import { Router } from "express";
 import {
   login,
   signUp,
-  requestPasswordReset,
-  verifyOtp,
+  requestOTP,
+  verifyOTP,
   resetPassword,
   changePassword,
 } from "../../controllers/users/auth.js";
@@ -30,8 +30,8 @@ const router = Router();
 router.post("/auth/signup", signUp);
 router.post("/auth/login", login);
 router.patch("/auth/changePassword", authenticateUser, changePassword);
-router.post("/auth/requestReset", requestPasswordReset);
-router.post("/auth/verifyOTP", verifyOtp);
+router.post("/auth/requestOTP", requestOTP);
+router.post("/auth/verifyOTP", verifyOTP);
 router.patch("/auth/resetPassword", resetPassword);
 
 // user routes
