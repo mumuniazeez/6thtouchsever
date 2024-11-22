@@ -4,7 +4,7 @@ import {
   getAdminProfile,
   editAdminProfile,
   deleteAdminProfile,
-  changeAdminAvatar
+  changeAdminAvatar,
 } from "../../controllers/admins/admin.js";
 import { authenticateAdmin, memoryUpload } from "../../util/util.js";
 import {
@@ -32,7 +32,12 @@ router.post("/auth/addAdmin", authenticateAdmin, addAdmin);
 router.get("/me", authenticateAdmin, getAdminProfile);
 router.patch("/me", authenticateAdmin, editAdminProfile);
 router.delete("/me", authenticateAdmin, deleteAdminProfile);
-router.patch("/admin/changeAvatar", authenticateAdmin, changeAdminAvatar);
+router.patch(
+  "/admin/changeAvatar",
+  authenticateAdmin,
+  memoryUpload.single("avatar"),
+  changeAdminAvatar
+);
 
 // admin courses route
 router.post(
