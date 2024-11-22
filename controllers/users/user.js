@@ -109,7 +109,7 @@ export const changeAvatar = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({
-      message: "Error deleting profile",
+      message: "Error uploading avatar",
       error,
     });
   }

@@ -77,3 +77,35 @@ export const deleteAdminProfile = async (req, res) => {
     });
   }
 };
+
+export const changeAdminAvatar = async (req, res) => {
+  try {
+    let { id } = req.admin;
+    let { buffer, mimetype } = req.file;
+
+    let admin = await Admins.findByPk(id);
+
+    if (!admin)
+      return res.status(404).json({
+        message: "Admin account not found",
+      });
+
+    if (admin.avatar) del(admin.avatar);
+    const { url } = await put(`/avatars/admins/avatar`, buffer, {
+      contentType: mimetype,
+      access: "public",
+    });
+    await admin.update({
+      avatar: url,
+    });
+    res.status(200).json({
+      message: "Avatar successfully uploaded",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Error uploading avatar",
+      error,
+    });
+  }
+};
