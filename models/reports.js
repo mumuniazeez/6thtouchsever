@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import { database } from "../util/util.js";
 
-const Reports = database.define("Reports", {
+const Report = database.define("Report", {
   id: {
     type: DataTypes.UUID,
     primaryKey: true,
@@ -18,4 +18,4 @@ const Reports = database.define("Reports", {
   },
 });
 
-export default Reports;
+export default Report;

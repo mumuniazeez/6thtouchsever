@@ -2,7 +2,7 @@ import { DataTypes } from "sequelize";
 import { database } from "../util/util.js";
 import { hashSync } from "bcrypt";
 
-const Admins = database.define("Admins", {
+const Admin = database.define("Admin", {
   id: {
     type: DataTypes.UUID,
     primaryKey: true,
@@ -39,4 +39,4 @@ const Admins = database.define("Admins", {
   },
 });
 
-export default Admins;
+export default Admin;

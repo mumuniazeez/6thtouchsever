@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import { database } from "../util/util.js";
 
-const Courses = database.define("Courses", {
+const Course = database.define("Course", {
   id: {
     type: DataTypes.UUID,
     primaryKey: true,
@@ -29,6 +29,11 @@ const Courses = database.define("Courses", {
     allowNull: false,
     defaultValue: false,
   },
+  isPaid: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
   price: {
     type: DataTypes.DECIMAL,
     allowNull: false,
@@ -49,4 +54,4 @@ const Courses = database.define("Courses", {
   },
 });
 
-export default Courses;
+export default Course;

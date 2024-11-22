@@ -51,7 +51,7 @@ router.get("/courses/myCourses", authenticateUser, getMyCourses);
 router.get("/courses/search/", searchPublishedCourses);
 router.get("/courses/category/:category", getAllPublishedCourseByCategory);
 router.get("/courses/:courseId/topics", getCourseTopics);
-router.get("/courses/:courseId/topics/:topicId", getTopicByID);
+router.get("/courses/topics/:topicId", getTopicByID);
 router.get("/courses/:courseId", getCourseByID);
 
 export default router;

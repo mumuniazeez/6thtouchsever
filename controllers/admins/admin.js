@@ -1,10 +1,10 @@
-import Admins from "../../models/admins.js";
+import Admin from "../../models/admins.js";
 
 export const getAdminProfile = async (req, res) => {
   try {
     let { id } = req.admin;
 
-    let admin = await Admins.findByPk(id);
+    let admin = await Admin.findByPk(id);
 
     if (!admin)
       return res.status(404).json({
@@ -25,7 +25,7 @@ export const editAdminProfile = async (req, res) => {
     let { id } = req.admin;
     let { firstName, lastName, email } = req.body;
 
-    let admin = await Admins.findByPk(id);
+    let admin = await Admin.findByPk(id);
 
     if (!admin)
       return res.status(404).json({
@@ -56,7 +56,7 @@ export const deleteAdminProfile = async (req, res) => {
     let { id } = req.admin;
     let { firstName, lastName, email } = req.body;
 
-    let admin = await Admins.findByPk(id);
+    let admin = await Admin.findByPk(id);
 
     if (!admin)
       return res.status(404).json({
@@ -83,7 +83,7 @@ export const changeAdminAvatar = async (req, res) => {
     let { id } = req.admin;
     let { buffer, mimetype } = req.file;
 
-    let admin = await Admins.findByPk(id);
+    let admin = await Admin.findByPk(id);
 
     if (!admin)
       return res.status(404).json({
