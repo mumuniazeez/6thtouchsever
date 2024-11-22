@@ -63,26 +63,22 @@ router.post(
 );
 
 router.patch(
-  "/courses/:courseId/edit",
+  "/courses/:courseId",
   authenticateAdmin,
   memoryUpload.single("thumbnail"),
   editCourse
 );
 
 router.patch(
-  "/courses/:courseId/topics/:topicId/edit",
+  "/courses/topics/:topicId",
   authenticateAdmin,
   memoryUpload.single("video"),
   editTopic
 );
 
-router.delete("/courses/:courseId/delete", authenticateAdmin, deleteCourse);
+router.delete("/courses/:courseId", authenticateAdmin, deleteCourse);
 
-router.delete(
-  "/courses/:courseId/topics/:topicId/delete",
-  authenticateAdmin,
-  deleteTopic
-);
+router.delete("/courses/topics/:topicId", authenticateAdmin, deleteTopic);
 
 router.patch("/courses/:courseId/publish", authenticateAdmin, publishCourse);
 

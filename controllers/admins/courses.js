@@ -1,7 +1,7 @@
-import Courses from "../../models/courses.js";
+import Course from "../../models/courses.js";
 import { unlink } from "fs";
 import { Op, Sequelize } from "sequelize";
-import Topics from "../../models/topics.js";
+import Topic from "../../models/topics.js";
 import { put, del } from "@vercel/blob";
 
 export const createCourse = async (req, res) => {
@@ -14,7 +14,7 @@ export const createCourse = async (req, res) => {
       access: "public",
     });
 
-    let course = await Courses.create({
+    let course = await Course.create({
       title,
       description,
       price,
@@ -47,7 +47,7 @@ export const searchAllCourses = async (req, res) => {
     let { q: searchQuery } = req.query;
     searchQuery += "%";
 
-    let courses = await Courses.findAll({
+    let courses = await Course.findAll({
       where: Sequelize.or(
         {
           title: {
@@ -60,7 +60,7 @@ export const searchAllCourses = async (req, res) => {
           },
         }
       ),
-      include: { model: Topics, as: "topics" },
+      include: { model: Topic, as: "topics" },
     });
 
     if (courses.length < 1)
@@ -79,8 +79,8 @@ export const searchAllCourses = async (req, res) => {
 
 export const getAllCourse = async (req, res) => {
   try {
-    let courses = await Courses.findAll({
-      include: { model: Topics, as: "topics" },
+    let courses = await Course.findAll({
+      include: { model: Topic, as: "topics" },
     });
 
     if (courses.length < 1)
@@ -101,11 +101,11 @@ export const getAllCourseByCategory = async (req, res) => {
   try {
     let { category } = req.params;
 
-    let courses = await Courses.findAll({
+    let courses = await Course.findAll({
       where: {
         category,
       },
-      include: { model: Topics, as: "topics" },
+      include: { model: Topic, as: "topics" },
     });
 
     if (courses.length < 1)
@@ -133,11 +133,11 @@ export const createTopic = async (req, res) => {
       access: "public",
     });
 
-    const topic = await Topics.create({
+    const topic = await Topic.create({
       title,
       note,
       description,
-      courseId,
+      CourseId: courseId,
       video: url,
     });
 
@@ -169,7 +169,7 @@ export const editCourse = async (req, res) => {
     let { courseId } = req.params;
     let { title, description, price, category, duration } = req.body;
 
-    let course = await Courses.findByPk(courseId);
+    let course = await Course.findByPk(courseId);
     if (!course) {
       return res.status(404).json({
         message: "Course not available or may be deleted",
@@ -222,7 +222,7 @@ export const editTopic = async (req, res) => {
     let { topicId } = req.params;
     let { title, note, description } = req.body;
 
-    let topic = await Topics.findByPk(topicId);
+    let topic = await Topic.findByPk(topicId);
     if (!topic) {
       if (req.file) unlink(req.file.path, (err) => err && console.log(err));
       return res.status(404).json({
@@ -274,7 +274,7 @@ export const deleteCourse = async (req, res) => {
   try {
     let { courseId } = req.params;
 
-    const topics = await Topics.findAll({
+    const topics = await Topic.findAll({
       where: {
         courseId,
       },
@@ -284,7 +284,7 @@ export const deleteCourse = async (req, res) => {
       await del(topic.video);
     });
 
-    let course = await Courses.findByPk(courseId);
+    let course = await Course.findByPk(courseId);
 
     if (!course)
       return res.status(401).json({
@@ -310,7 +310,7 @@ export const deleteTopic = async (req, res) => {
   try {
     let { topicId } = req.params;
 
-    let topic = await Topics.findByPk(topicId);
+    let topic = await Topic.findByPk(topicId);
 
     if (!topic)
       return res.status(404).json({
@@ -335,7 +335,7 @@ export const deleteTopic = async (req, res) => {
 export const publishCourse = async (req, res) => {
   try {
     let { courseId } = req.params;
-    let [affectRows] = await Courses.update(
+    let [affectRows] = await Course.update(
       {
         isPublished: true,
       },
@@ -365,7 +365,7 @@ export const publishCourse = async (req, res) => {
 export const unpublishCourse = async (req, res) => {
   try {
     let { courseId } = req.params;
-    let [affectRows] = await Courses.update(
+    let [affectRows] = await Course.update(
       {
         isPublished: false,
       },

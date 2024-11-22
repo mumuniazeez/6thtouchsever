@@ -1,11 +1,11 @@
-import Users from "../../models/users.js";
+import User from "../../models/users.js";
 import { del, put } from "@vercel/blob";
 
 export const getMyProfile = async (req, res) => {
   try {
     let { id } = req.user;
 
-    let user = await Users.findByPk(id);
+    let user = await User.findByPk(id);
 
     if (!user)
       return res.status(404).json({
@@ -27,7 +27,7 @@ export const editMyProfile = async (req, res) => {
     let { id } = req.user;
     let { firstName, lastName, email } = req.body;
 
-    let [affectedRows] = await Users.update(
+    let [affectedRows] = await User.update(
       {
         firstName,
         lastName,
@@ -61,7 +61,7 @@ export const deleteMyProfile = async (req, res) => {
   try {
     let { id } = req.user;
 
-    let deletedRows = await Users.destroy({
+    let deletedRows = await User.destroy({
       where: { id },
       force: true,
     });
@@ -88,7 +88,7 @@ export const changeAvatar = async (req, res) => {
     let { id } = req.user;
     let { buffer, mimetype } = req.file;
 
-    let user = await Users.findByPk(id);
+    let user = await User.findByPk(id);
 
     if (!user)
       return res.status(404).json({

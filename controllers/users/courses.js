@@ -1,14 +1,14 @@
 import { Op, Sequelize } from "sequelize";
-import Courses from "../../models/courses.js";
-import Topics from "../../models/topics.js";
+import Course from "../../models/courses.js";
+import Topic from "../../models/topics.js";
 
 export const getAllPublishedCourse = async (req, res) => {
   try {
-    let courses = await Courses.findAll({
+    let courses = await Course.findAll({
       where: {
         isPublished: true,
       },
-      include: { model: Topics, as: "topics" },
+      include: { model: Topic, as: "topics" },
     });
 
     if (courses.length < 1)
@@ -28,12 +28,12 @@ export const getAllPublishedCourse = async (req, res) => {
 export const getAllPublishedCourseByCategory = async (req, res) => {
   try {
     let { category } = req.params;
-    let courses = await Courses.findAll({
+    let courses = await Course.findAll({
       where: {
         isPublished: true,
         category,
       },
-      include: { model: Topics, as: "topics" },
+      include: { model: Topic, as: "topics" },
     });
 
     if (courses.length < 1)
@@ -54,15 +54,15 @@ export const getCourseByID = async (req, res) => {
   try {
     let { courseId } = req.params;
 
-    let course = await Courses.findByPk(courseId, {
-      include: { model: Topics, as: "topics" },
+    let course = await Course.findByPk(courseId, {
+      include: { model: Topic, as: "topics" },
     });
     if (!course)
       return res.status(404).json({
         message: "Course not available or may be deleted",
       });
 
-    await Courses.increment(
+    await Course.increment(
       { reviews: 1 },
       {
         where: {
@@ -83,11 +83,11 @@ export const getCourseByID = async (req, res) => {
 export const getCourseTopics = async (req, res) => {
   try {
     let { courseId } = req.params;
-    let topics = await Topics.findAll({
+    let topics = await Topic.findAll({
       where: {
         courseId,
       },
-      include: { model: Courses, as: "course" },
+      include: { model: Course, as: "course" },
     });
 
     if (topics.length < 1)
@@ -109,7 +109,7 @@ export const searchPublishedCourses = async (req, res) => {
     let { q: searchQuery } = req.query;
     searchQuery += "%";
 
-    let courses = await Courses.findAll({
+    let courses = await Course.findAll({
       where: Sequelize.and(
         { isPublished: true },
         Sequelize.or(
@@ -125,7 +125,7 @@ export const searchPublishedCourses = async (req, res) => {
           }
         )
       ),
-      include: { model: Topics, as: "topics" },
+      include: { model: Topic, as: "topics" },
     });
     if (courses.length < 1)
       return res.status(404).json({
@@ -145,8 +145,8 @@ export const getTopicByID = async (req, res) => {
   try {
     let { topicId } = req.params;
 
-    let topic = Topics.findByPk(topicId, {
-      include: { model: Courses, as: "course" },
+    let topic = Topic.findByPk(topicId, {
+      include: { model: Course, as: "course" },
     });
     if (!topic)
       return res.status(404).json({
@@ -166,8 +166,8 @@ export const getMyCourses = async (req, res) => {
   try {
     let { id } = req.user;
 
-    let courses = await Courses.findAll({
-      include: { model: Topics, as: "topics" },
+    let courses = await Course.findAll({
+      include: { model: Topic, as: "topics" },
     });
     if (courses.length < 1)
       return res.status(404).json({
@@ -180,7 +180,7 @@ export const getMyCourses = async (req, res) => {
       subscribers = [...subscribers, ...course.subscribers, id];
     });
 
-    courses = await Courses.findAll({
+    courses = await Course.findAll({
       where: {
         subscribers,
       },

@@ -1,5 +1,5 @@
 import { compareSync } from "bcrypt";
-import Users from "../../models/users.js";
+import User from "../../models/users.js";
 import Otp from "../../models/otp.js";
 import jwtPkg from "jsonwebtoken";
 const { sign } = jwtPkg;
@@ -16,7 +16,7 @@ export const signUp = async (req, res) => {
     const { firstName, lastName, email, password } = req.body;
 
     // creating the user account
-    const user = await Users.create({
+    const user = await User.create({
       firstName,
       lastName,
       email,
@@ -104,11 +104,11 @@ export const signUp = async (req, res) => {
           <div class="email-container">
             <div class="header">
               <img src="https://www.6thtouchrobotics.com.ng/assets/images/6thtouch_logo.png" alt="Logo" class="logo" />
-              <h1>Welcome to 6thouch!</h1>
+              <h1>Welcome to 6thtouch!</h1>
             </div>
             <div class="content">
               <h2>Hi ${user.firstName},</h2>
-              <p>We're thrilled to have you join us at 6thouch, the platform where learning is fun, flexible, and accessible.</p>
+              <p>We're thrilled to have you join us at 6thtouch, the platform where learning is fun, flexible, and accessible.</p>
               <p>Here’s what you can do:</p>
               <ul class="feature-list">
                 <li>Explore and purchase courses on various topics.</li>
@@ -121,10 +121,10 @@ export const signUp = async (req, res) => {
               </p>
            
               <p>Welcome aboard!</p>
-              <p>The 6thouch Team</p>
+              <p>The 6thtouch Team</p>
             </div>
             <div class="footer">
-              © 2024 6thouch | Empowering Learning Everywhere.
+              © 2024 6thtouch | Empowering Learning Everywhere.
             </div>
           </div>
         </body>
@@ -145,7 +145,7 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
 
     // getting the user with the email provided
-    const user = await Users.findOne({
+    const user = await User.findOne({
       where: {
         email,
       },
@@ -192,7 +192,7 @@ export const changePassword = async (req, res) => {
     let { currentPassword, newPassword } = req.body;
 
     // getting the user with the email provided
-    const user = await Users.findByPk(id);
+    const user = await User.findByPk(id);
 
     // checking if the user exist
     if (!user)
@@ -230,7 +230,7 @@ export const requestOTP = async (req, res) => {
     const { email } = req.body;
 
     // Find user
-    const user = await Users.findOne({ where: { email } });
+    const user = await User.findOne({ where: { email } });
     if (!user) return res.status(404).json({ message: "User not found" });
 
     // Generate OTP
@@ -362,7 +362,7 @@ export const resetPassword = async (req, res) => {
   const { email, newPassword } = req.body;
 
   // Update user's password
-  await Users.update({ password: newPassword }, { where: { email } });
+  await User.update({ password: newPassword }, { where: { email } });
 
   res.json({ message: "Password reset successfully" });
 };
