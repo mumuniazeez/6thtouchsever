@@ -9,6 +9,7 @@ const Admins = database.define("Admins", {
     allowNull: false,
     defaultValue: DataTypes.UUIDV4,
   },
+  avatar: DataTypes.STRING,
   firstName: {
     type: DataTypes.STRING,
     allowNull: false,
