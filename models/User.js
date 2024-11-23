@@ -1,6 +1,8 @@
 import { DataTypes } from "sequelize";
 import { database } from "../util/util.js";
 import { hashSync } from "bcrypt";
+import Report from "./Report.js";
+import Course from "./Course.js";
 
 const User = database.define("user", {
   id: {
@@ -38,5 +40,6 @@ const User = database.define("user", {
     },
   },
 });
+
 
 export default User;

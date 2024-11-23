@@ -5,17 +5,27 @@ import User from "./models/User.js";
 import { database } from "./util/util.js";
 
 const migrate = async () => {
+  // User-Report relation
   User.hasMany(Report, {
     onDelete: "SET NULL",
     onUpdate: "NO ACTION",
   });
   Report.belongsTo(User);
 
+  // Course-Topic relation
   Course.hasMany(Topic, {
     onDelete: "CASCADE",
     onUpdate: "NO ACTION",
   });
   Topic.belongsTo(Course);
+
+  Course.belongsToMany(User, {
+    through: "userCourses",
+    as: "subscribers",
+  });
+  User.belongsToMany(Course, {
+    through: "userCourses",
+  });
 
   await database.sync({ alter: true });
 

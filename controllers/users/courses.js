@@ -1,6 +1,7 @@
 import { Op, Sequelize } from "sequelize";
 import Course from "../../models/Course.js";
 import Topic from "../../models/Topic.js";
+import User from "../../models/User.js";
 
 export const getAllPublishedCourse = async (req, res) => {
   try {
@@ -8,7 +9,7 @@ export const getAllPublishedCourse = async (req, res) => {
       where: {
         isPublished: true,
       },
-      include: { model: Topic },
+      include: { all: true },
     });
 
     if (courses.length < 1)
@@ -33,7 +34,7 @@ export const getAllPublishedCourseByCategory = async (req, res) => {
         isPublished: true,
         category,
       },
-      include: { model: Topic },
+      include: { all: true },
     });
 
     if (courses.length < 1)
@@ -55,7 +56,7 @@ export const getCourseByID = async (req, res) => {
     let { courseId } = req.params;
 
     let course = await Course.findByPk(courseId, {
-      include: { model: Topic },
+      include: { all: true },
     });
     if (!course)
       return res.status(404).json({
@@ -87,7 +88,7 @@ export const getCourseTopics = async (req, res) => {
       where: {
         courseId,
       },
-      include: { model: Course, as: "course" },
+      include: { all: true },
     });
 
     if (topics.length < 1)
@@ -125,7 +126,7 @@ export const searchPublishedCourses = async (req, res) => {
           }
         )
       ),
-      include: { model: Topic },
+      include: { all: true },
     });
     if (courses.length < 1)
       return res.status(404).json({
@@ -146,7 +147,7 @@ export const getTopicByID = async (req, res) => {
     let { topicId } = req.params;
 
     let topic = Topic.findByPk(topicId, {
-      include: { model: Course },
+      include: { all: true },
     });
     if (!topic)
       return res.status(404).json({
@@ -166,32 +167,16 @@ export const getMyCourses = async (req, res) => {
   try {
     let { id } = req.user;
 
-    let courses = await Course.findAll({
-      include: { model: Topic },
+    let user = await User.findByPk(id, {
+      include: { all: true },
     });
-    if (courses.length < 1)
+
+    if (!user)
       return res.status(404).json({
-        message: "You haven't enrolled to any course.",
+        message: "User not found",
       });
 
-    let subscribers = [];
-
-    courses.forEach((course) => {
-      subscribers = [...subscribers, ...course.subscribers, id];
-    });
-
-    courses = await Course.findAll({
-      where: {
-        subscribers,
-      },
-    });
-
-    if (courses.length < 1)
-      return res.status(404).json({
-        message: "You haven't enrolled to any course.",
-      });
-
-    res.status(200).json(courses);
+    res.status(200).json(user.courses);
   } catch (error) {
     console.log(error);
     res.status(500).json({

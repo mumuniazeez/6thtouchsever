@@ -5,7 +5,9 @@ export const getMyProfile = async (req, res) => {
   try {
     let { id } = req.user;
 
-    let user = await User.findByPk(id);
+    let user = await User.findByPk(id, {
+      include: { all: true },
+    });
 
     if (!user)
       return res.status(404).json({
@@ -13,6 +15,7 @@ export const getMyProfile = async (req, res) => {
       });
 
     res.status(200).json(user);
+
   } catch (error) {
     console.log(error);
     res.status(500).json({
