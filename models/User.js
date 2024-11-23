@@ -1,14 +1,17 @@
 import { DataTypes } from "sequelize";
 import { database } from "../util/util.js";
 import { hashSync } from "bcrypt";
+import Report from "./Report.js";
+import Course from "./Course.js";
 
-const Users = database.define("Users", {
+const User = database.define("user", {
   id: {
     type: DataTypes.UUID,
     primaryKey: true,
     allowNull: false,
     defaultValue: DataTypes.UUIDV4,
   },
+  avatar: DataTypes.STRING,
   firstName: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -38,4 +41,5 @@ const Users = database.define("Users", {
   },
 });
 
-export default Users;
+
+export default User;

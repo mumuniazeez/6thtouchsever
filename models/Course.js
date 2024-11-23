@@ -1,7 +1,9 @@
 import { DataTypes } from "sequelize";
 import { database } from "../util/util.js";
+import Topic from "./Topic.js";
+import User from "./User.js";
 
-const Courses = database.define("Courses", {
+const Course = database.define("course", {
   id: {
     type: DataTypes.UUID,
     primaryKey: true,
@@ -13,18 +15,19 @@ const Courses = database.define("Courses", {
     allowNull: false,
   },
   description: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(500),
     allowNull: false,
-  },
-  subscribers: {
-    type: DataTypes.ARRAY(DataTypes.UUID),
-    defaultValue: [],
   },
   thumbnail: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  isPublic: {
+  isPublished: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
+  isPaid: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
     defaultValue: false,
@@ -42,6 +45,12 @@ const Courses = database.define("Courses", {
     allowNull: false,
     defaultValue: 0,
   },
+  duration: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: "",
+  },
 });
 
-export default Courses;
+
+export default Course;

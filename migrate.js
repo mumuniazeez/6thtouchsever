@@ -1,18 +1,35 @@
-import Courses from "./models/courses.js";
-import Topics from "./models/topics.js";
+import Course from "./models/Course.js";
+import Topic from "./models/Topic.js";
+import Report from "./models/Report.js";
+import User from "./models/User.js";
 import { database } from "./util/util.js";
 
 const migrate = async () => {
-  Courses.hasMany(Topics, {
+  // User-Report relation
+  User.hasMany(Report, {
+    onDelete: "SET NULL",
+    onUpdate: "NO ACTION",
+  });
+  Report.belongsTo(User);
+
+  // Course-Topic relation
+  Course.hasMany(Topic, {
     onDelete: "CASCADE",
     onUpdate: "NO ACTION",
   });
-  Topics.belongsTo(Courses);
+  Topic.belongsTo(Course);
+
+  Course.belongsToMany(User, {
+    through: "userCourses",
+    as: "subscribers",
+  });
+  User.belongsToMany(Course, {
+    through: "userCourses",
+  });
 
   await database.sync({ alter: true });
-  console.log("\n✅ All model synced");
 
-  process.exit();
+  console.log("\n✅ All model synced");
 };
 
 // script.js

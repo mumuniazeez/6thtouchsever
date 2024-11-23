@@ -3,11 +3,14 @@ import { Sequelize } from "sequelize";
 import jwtPkg from "jsonwebtoken";
 import multer from "multer";
 const { verify } = jwtPkg;
+import nodemailer from "nodemailer";
 
 import "pg";
 import "pg-hstore";
 
 config();
+
+// const blobClient = createBlobClient(process.env.BLOB_READ_WRITE_TOKEN);
 
 const database = new Sequelize(process.env.DB_URI, {
   dialect: "postgres",
@@ -23,13 +26,14 @@ const database = new Sequelize(process.env.DB_URI, {
     min: 0, // Minimum number of connections in the pool
     idle: 10000, // Connection idle time before release (in ms)
   },
+  logging: false,
 });
 
 try {
   await database.authenticate();
-  console.log("Database connection has been established successfully.");
+  console.log("✅ Database connection has been established successfully.");
 } catch (error) {
-  console.error("Unable to connect to the database:", error);
+  console.error("❌ Unable to connect to the database:", error);
 }
 
 const authenticateUser = async (req, res, next) => {
@@ -94,32 +98,22 @@ const authenticateAdmin = (req, res, next) => {
   }
 };
 
-const thumbnailStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "public/uploads/thumbnail");
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
+const memoryStorage = multer.memoryStorage();
+const memoryUpload = multer({ storage: memoryStorage });
 
-const thumbnailUpload = multer({ storage: thumbnailStorage });
-
-const videoStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "public/uploads/videos");
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
-
-const videoUpload = multer({ storage: videoStorage });
+ const transporter = nodemailer.createTransport({
+   host: process.env.EMAIL_HOST,
+   port: process.env.EMAIL_PORT,
+   auth: {
+     user: process.env.EMAIL_USER,
+     pass: process.env.EMAIL_PASS,
+   },
+ });
 
 export {
   database,
   authenticateUser,
   authenticateAdmin,
-  thumbnailUpload,
-  videoUpload,
+  memoryUpload,
+  transporter,
 };

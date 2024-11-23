@@ -1,14 +1,15 @@
 import { Op, Sequelize } from "sequelize";
-import Courses from "../../models/courses.js";
-import Topics from "../../models/topics.js";
+import Course from "../../models/Course.js";
+import Topic from "../../models/Topic.js";
+import User from "../../models/User.js";
 
 export const getAllPublishedCourse = async (req, res) => {
   try {
-    let courses = await Courses.findAll({
+    let courses = await Course.findAll({
       where: {
-        isPublic: true,
+        isPublished: true,
       },
-      include: { model: Topics, as: "topics" },
+      include: { all: true },
     });
 
     if (courses.length < 1)
@@ -28,12 +29,12 @@ export const getAllPublishedCourse = async (req, res) => {
 export const getAllPublishedCourseByCategory = async (req, res) => {
   try {
     let { category } = req.params;
-    let courses = await Courses.findAll({
+    let courses = await Course.findAll({
       where: {
-        isPublic: true,
+        isPublished: true,
         category,
       },
-      include: { model: Topics, as: "topics" },
+      include: { all: true },
     });
 
     if (courses.length < 1)
@@ -54,15 +55,15 @@ export const getCourseByID = async (req, res) => {
   try {
     let { courseId } = req.params;
 
-    let course = await Courses.findByPk(courseId, {
-      include: { model: Topics, as: "topics" },
+    let course = await Course.findByPk(courseId, {
+      include: { all: true },
     });
     if (!course)
       return res.status(404).json({
         message: "Course not available or may be deleted",
       });
 
-    await Courses.increment(
+    await Course.increment(
       { reviews: 1 },
       {
         where: {
@@ -83,11 +84,11 @@ export const getCourseByID = async (req, res) => {
 export const getCourseTopics = async (req, res) => {
   try {
     let { courseId } = req.params;
-    let topics = await Topics.findAll({
+    let topics = await Topic.findAll({
       where: {
         courseId,
       },
-      include: { model: Courses, as: "course" },
+      include: { all: true },
     });
 
     if (topics.length < 1)
@@ -109,9 +110,9 @@ export const searchPublishedCourses = async (req, res) => {
     let { q: searchQuery } = req.query;
     searchQuery += "%";
 
-    let courses = await Courses.findAll({
+    let courses = await Course.findAll({
       where: Sequelize.and(
-        { isPublic: true },
+        { isPublished: true },
         Sequelize.or(
           {
             title: {
@@ -125,7 +126,7 @@ export const searchPublishedCourses = async (req, res) => {
           }
         )
       ),
-      include: { model: Topics, as: "topics" },
+      include: { all: true },
     });
     if (courses.length < 1)
       return res.status(404).json({
@@ -145,8 +146,8 @@ export const getTopicByID = async (req, res) => {
   try {
     let { topicId } = req.params;
 
-    let topic = Topics.findByPk(topicId, {
-      include: { model: Courses, as: "course" },
+    let topic = Topic.findByPk(topicId, {
+      include: { all: true },
     });
     if (!topic)
       return res.status(404).json({
@@ -166,32 +167,16 @@ export const getMyCourses = async (req, res) => {
   try {
     let { id } = req.user;
 
-    let courses = await Courses.findAll({
-      include: { model: Topics, as: "topics" },
+    let user = await User.findByPk(id, {
+      include: { all: true },
     });
-    if (courses.length < 1)
+
+    if (!user)
       return res.status(404).json({
-        message: "You haven't enrolled to any course.",
+        message: "User not found",
       });
 
-    let subscribers = [];
-
-    courses.forEach((course) => {
-      subscribers = [...subscribers, ...course.subscribers, id];
-    });
-
-    courses = await Courses.findAll({
-      where: {
-        subscribers,
-      },
-    });
-
-    if (courses.length < 1)
-      return res.status(404).json({
-        message: "You haven't enrolled to any course.",
-      });
-
-    res.status(200).json(courses);
+    res.status(200).json(user.courses);
   } catch (error) {
     console.log(error);
     res.status(500).json({

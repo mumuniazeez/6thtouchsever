@@ -4,8 +4,9 @@ import {
   getAdminProfile,
   editAdminProfile,
   deleteAdminProfile,
+  changeAdminAvatar,
 } from "../../controllers/admins/admin.js";
-import { authenticateAdmin } from "../../util/util.js";
+import { authenticateAdmin, memoryUpload } from "../../util/util.js";
 import {
   createCourse,
   createTopic,
@@ -19,7 +20,7 @@ import {
   searchAllCourses,
   unpublishCourse,
 } from "../../controllers/admins/courses.js";
-import { thumbnailUpload, videoUpload } from "../../util/util.js";
+import { getReports } from "../../controllers/admins/reports.js";
 
 let router = Router();
 
@@ -32,12 +33,18 @@ router.post("/auth/addAdmin", authenticateAdmin, addAdmin);
 router.get("/me", authenticateAdmin, getAdminProfile);
 router.patch("/me", authenticateAdmin, editAdminProfile);
 router.delete("/me", authenticateAdmin, deleteAdminProfile);
+router.patch(
+  "/admin/changeAvatar",
+  authenticateAdmin,
+  memoryUpload.single("avatar"),
+  changeAdminAvatar
+);
 
 // admin courses route
 router.post(
   "/courses/create",
   authenticateAdmin,
-  thumbnailUpload.single("thumbnail"),
+  memoryUpload.single("thumbnail"),
   createCourse
 );
 
@@ -52,31 +59,27 @@ router.get(
 router.post(
   "/courses/:courseId/topics/add",
   authenticateAdmin,
-  videoUpload.single("video"),
+  memoryUpload.single("video"),
   createTopic
 );
 
 router.patch(
-  "/courses/:courseId/edit",
+  "/courses/:courseId",
   authenticateAdmin,
-  thumbnailUpload.single("thumbnail"),
+  memoryUpload.single("thumbnail"),
   editCourse
 );
 
 router.patch(
-  "/courses/:courseId/topics/:topicId/edit",
+  "/courses/topics/:topicId",
   authenticateAdmin,
-  videoUpload.single("video"),
+  memoryUpload.single("video"),
   editTopic
 );
 
-router.delete("/courses/:courseId/delete", authenticateAdmin, deleteCourse);
+router.delete("/courses/:courseId", authenticateAdmin, deleteCourse);
 
-router.delete(
-  "/courses/:courseId/topics/:topicId/delete",
-  authenticateAdmin,
-  deleteTopic
-);
+router.delete("/courses/topics/:topicId", authenticateAdmin, deleteTopic);
 
 router.patch("/courses/:courseId/publish", authenticateAdmin, publishCourse);
 
@@ -86,4 +89,6 @@ router.patch(
   unpublishCourse
 );
 
+// reports endpoint
+router.get("/reports", authenticateAdmin, getReports);
 export default router;

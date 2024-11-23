@@ -1,10 +1,13 @@
-import Users from "../../models/users.js";
+import User from "../../models/User.js";
+import { del, put } from "@vercel/blob";
 
 export const getMyProfile = async (req, res) => {
   try {
     let { id } = req.user;
 
-    let user = await Users.findByPk(id);
+    let user = await User.findByPk(id, {
+      include: { all: true },
+    });
 
     if (!user)
       return res.status(404).json({
@@ -12,6 +15,7 @@ export const getMyProfile = async (req, res) => {
       });
 
     res.status(200).json(user);
+
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -26,7 +30,7 @@ export const editMyProfile = async (req, res) => {
     let { id } = req.user;
     let { firstName, lastName, email } = req.body;
 
-    let [affectedRows] = await Users.update(
+    let [affectedRows] = await User.update(
       {
         firstName,
         lastName,
@@ -60,7 +64,7 @@ export const deleteMyProfile = async (req, res) => {
   try {
     let { id } = req.user;
 
-    let deletedRows = await Users.destroy({
+    let deletedRows = await User.destroy({
       where: { id },
       force: true,
     });
@@ -77,6 +81,38 @@ export const deleteMyProfile = async (req, res) => {
     console.log(error);
     res.status(500).json({
       message: "Error deleting profile",
+      error,
+    });
+  }
+};
+
+export const changeAvatar = async (req, res) => {
+  try {
+    let { id } = req.user;
+    let { buffer, mimetype } = req.file;
+
+    let user = await User.findByPk(id);
+
+    if (!user)
+      return res.status(404).json({
+        message: "User account not found",
+      });
+
+    if (user.avatar) del(user.avatar);
+    const { url } = await put(`/avatars/users/avatar`, buffer, {
+      contentType: mimetype,
+      access: "public",
+    });
+    await user.update({
+      avatar: url,
+    });
+    res.status(200).json({
+      message: "Avatar successfully uploaded",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Error uploading avatar",
       error,
     });
   }

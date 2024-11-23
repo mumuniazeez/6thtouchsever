@@ -1,14 +1,14 @@
 import { compareSync } from "bcrypt";
 import jwtPkg from "jsonwebtoken";
 const { sign } = jwtPkg;
-import Admins from "../../models/admins.js";
+import Admin from "../../models/Admin.js";
 
 export const addAdmin = async (req, res) => {
   try {
     let { firstName, lastName, email, password } = req.body;
 
     // insert data for database
-    let admin = await Admins.create({
+    let admin = await Admin.create({
       firstName,
       lastName,
       email,
@@ -33,16 +33,18 @@ export const addAdmin = async (req, res) => {
   }
 };
 
-
 export const adminLogIn = async (req, res) => {
   try {
     let { adminEmail, adminPassword } = req.body;
+    console.log(adminEmail);
 
-    let admin = await Admins.findOne({
+    let admin = await Admin.findOne({
       where: {
         email: adminEmail,
       },
     });
+
+    console.log(admin);
 
     // check if the admin exist
     // if there no admin

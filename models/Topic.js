@@ -1,7 +1,7 @@
 import { database } from "../util/util.js";
 import { DataTypes } from "sequelize";
 
-const Topics = database.define("Topics", {
+const Topic = database.define("topic", {
   id: {
     type: DataTypes.UUID,
     primaryKey: true,
@@ -26,4 +26,4 @@ const Topics = database.define("Topics", {
   },
 });
 
-export default Topics;
+export default Topic;
