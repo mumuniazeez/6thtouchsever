@@ -24,14 +24,19 @@ import {
   searchPublishedCourses,
 } from "../../controllers/users/courses.js";
 import { createReport } from "../../controllers/users/report.js";
+import rateLimit from "express-rate-limit";
 
 const router = Router();
+
+const OTPRequestLimiter = rateLimit({
+  limit: 1,
+});
 
 // authentication routes
 router.post("/auth/signup", signUp);
 router.post("/auth/login", login);
 router.patch("/auth/changePassword", authenticateUser, changePassword);
-router.post("/auth/requestOTP", requestOTP);
+router.post("/auth/requestOTP", OTPRequestLimiter, requestOTP);
 router.post("/auth/verifyOTP", verifyOTP);
 router.patch("/auth/resetPassword", resetPassword);
 
