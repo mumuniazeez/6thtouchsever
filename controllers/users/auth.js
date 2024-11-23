@@ -336,6 +336,8 @@ export const requestOTP = async (req, res) => {
     });
 
     res.json({ message: "OTP sent successfully" });
+
+    setTimeout(() => Otp.destroy({ force: true }), 600000);
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -350,9 +352,9 @@ export const verifyOTP = async (req, res) => {
 
   // Find OTP record
   const otpRecord = await Otp.findOne({ where: { email, otp } });
-  if (!otpRecord || otpRecord.expiresAt < Date.now()) {
+  if (!otpRecord || otpRecord.expiresAt < Date.now())
     return res.status(400).json({ message: "Invalid or expired OTP" });
-  }
+
   await otpRecord.destroy({ force: true });
 
   res.json({ message: "OTP verified successfully" });
