@@ -24,7 +24,7 @@ export const createCourse = async (req, res) => {
     });
 
     if (!course) {
-      // if (req.file) unlink(req.file.path, (err) => err && console.log(err));
+      //
       return res.status(401).json({
         message: "Error creating course",
       });
@@ -34,7 +34,7 @@ export const createCourse = async (req, res) => {
       message: "Course created successfully",
     });
   } catch (error) {
-    // if (req.file) unlink(req.file.path, (err) => err && console.log(err));
+    //
     console.log(error);
     res.status(500).json({
       message: "Error creating course",
@@ -144,7 +144,6 @@ export const createTopic = async (req, res) => {
     await topic.save();
 
     if (!topic) {
-      if (req.file) unlink(req.file.path, (err) => err && console.log(err));
       return res.status(401).json({
         message: "Error creating topic",
       });
@@ -154,7 +153,6 @@ export const createTopic = async (req, res) => {
       message: "Topic created successfully",
     });
   } catch (error) {
-    if (req.file) unlink(req.file.path, (err) => err && console.log(err));
     console.log(error);
     res.status(500).json({
       message:
@@ -224,7 +222,6 @@ export const editTopic = async (req, res) => {
 
     let topic = await Topic.findByPk(topicId);
     if (!topic) {
-      if (req.file) unlink(req.file.path, (err) => err && console.log(err));
       return res.status(404).json({
         message: "Topic not available or may be deleted",
       });
@@ -252,7 +249,6 @@ export const editTopic = async (req, res) => {
     });
 
     if (topic.isNewRecord) {
-      if (req.file) unlink(req.file.path, (err) => err && console.log(err));
       return res.status(401).json({
         message: "Error editing topic",
       });
@@ -262,7 +258,6 @@ export const editTopic = async (req, res) => {
       message: "Topic edited successfully",
     });
   } catch (error) {
-    if (req.file) unlink(req.file.path, (err) => err && console.log(err));
     console.log(error);
     res.status(500).json({
       message: "Error editing topic",
