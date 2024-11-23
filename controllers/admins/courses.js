@@ -1,7 +1,7 @@
-import Course from "../../models/courses.js";
+import Course from "../../models/Course.js";
 import { unlink } from "fs";
 import { Op, Sequelize } from "sequelize";
-import Topic from "../../models/topics.js";
+import Topic from "../../models/Topic.js";
 import { put, del } from "@vercel/blob";
 
 export const createCourse = async (req, res) => {
@@ -60,7 +60,7 @@ export const searchAllCourses = async (req, res) => {
           },
         }
       ),
-      include: { model: Topic, as: "topics" },
+      include: { model: Topic },
     });
 
     if (courses.length < 1)
@@ -80,7 +80,7 @@ export const searchAllCourses = async (req, res) => {
 export const getAllCourse = async (req, res) => {
   try {
     let courses = await Course.findAll({
-      include: { model: Topic, as: "topics" },
+      include: { model: Topic },
     });
 
     if (courses.length < 1)
@@ -105,7 +105,7 @@ export const getAllCourseByCategory = async (req, res) => {
       where: {
         category,
       },
-      include: { model: Topic, as: "topics" },
+      include: { model: Topic },
     });
 
     if (courses.length < 1)
@@ -137,7 +137,7 @@ export const createTopic = async (req, res) => {
       title,
       note,
       description,
-      CourseId: courseId,
+      courseId: courseId,
       video: url,
     });
 

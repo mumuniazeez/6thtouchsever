@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import { database } from "../util/util.js";
 
-const Otp = database.define("Otp", {
+const Otp = database.define("otp", {
   id: {
     type: DataTypes.UUID,
     primaryKey: true,

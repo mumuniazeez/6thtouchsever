@@ -1,22 +1,19 @@
-import Course from "./models/courses.js";
-import Topic from "./models/topics.js";
-import Report from "./models/reports.js";
-import User from "./models/users.js";
-import Otp from "./models/otp.js";
+import Course from "./models/Course.js";
+import Topic from "./models/Topic.js";
+import Report from "./models/Report.js";
+import User from "./models/User.js";
 import { database } from "./util/util.js";
 
 const migrate = async () => {
-  User.hasOne(Report, {
+  User.hasMany(Report, {
     onDelete: "SET NULL",
     onUpdate: "NO ACTION",
-    as: "reports",
   });
   Report.belongsTo(User);
 
   Course.hasMany(Topic, {
     onDelete: "CASCADE",
     onUpdate: "NO ACTION",
-    as: "topics",
   });
   Topic.belongsTo(Course);
 

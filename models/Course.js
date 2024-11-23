@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import { database } from "../util/util.js";
 
-const Course = database.define("Course", {
+const Course = database.define("course", {
   id: {
     type: DataTypes.UUID,
     primaryKey: true,

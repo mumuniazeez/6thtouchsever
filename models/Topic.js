@@ -1,7 +1,7 @@
 import { database } from "../util/util.js";
 import { DataTypes } from "sequelize";
 
-const Topic = database.define("Topic", {
+const Topic = database.define("topic", {
   id: {
     type: DataTypes.UUID,
     primaryKey: true,

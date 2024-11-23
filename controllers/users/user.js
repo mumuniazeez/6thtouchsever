@@ -1,4 +1,4 @@
-import User from "../../models/users.js";
+import User from "../../models/User.js";
 import { del, put } from "@vercel/blob";
 
 export const getMyProfile = async (req, res) => {

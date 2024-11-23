@@ -20,6 +20,7 @@ import {
   searchAllCourses,
   unpublishCourse,
 } from "../../controllers/admins/courses.js";
+import { getReports } from "../../controllers/admins/reports.js";
 
 let router = Router();
 
@@ -88,4 +89,6 @@ router.patch(
   unpublishCourse
 );
 
+// reports endpoint
+router.get("/reports", authenticateAdmin, getReports);
 export default router;

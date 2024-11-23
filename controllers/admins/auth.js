@@ -1,7 +1,7 @@
 import { compareSync } from "bcrypt";
 import jwtPkg from "jsonwebtoken";
 const { sign } = jwtPkg;
-import Admin from "../../models/admins.js";
+import Admin from "../../models/Admin.js";
 
 export const addAdmin = async (req, res) => {
   try {
