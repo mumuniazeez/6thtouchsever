@@ -30,6 +30,9 @@ const router = Router();
 
 const OTPRequestLimiter = rateLimit({
   limit: 1,
+  message: {
+    message: "Too many request try again after 1 minute",
+  },
 });
 
 // authentication routes
