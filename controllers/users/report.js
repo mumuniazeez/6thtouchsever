@@ -1,6 +1,6 @@
-import Report from "../../models/reports";
+import Report from "../../models/Report.js";
 
-const makeReport = async (req, res) => {
+export const createReport = async (req, res) => {
   try {
     const { id } = req.user;
     const { title, message } = req.body;
@@ -8,7 +8,7 @@ const makeReport = async (req, res) => {
     const report = await Report.create({
       title,
       message,
-      UserId: id,
+      userId: id,
     });
 
     if (!report)

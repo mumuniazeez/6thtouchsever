@@ -23,6 +23,7 @@ import {
   getTopicByID,
   searchPublishedCourses,
 } from "../../controllers/users/courses.js";
+import { createReport } from "../../controllers/users/report.js";
 
 const router = Router();
 
@@ -53,5 +54,8 @@ router.get("/courses/category/:category", getAllPublishedCourseByCategory);
 router.get("/courses/:courseId/topics", getCourseTopics);
 router.get("/courses/topics/:topicId", getTopicByID);
 router.get("/courses/:courseId", getCourseByID);
+
+// reports endpoint
+router.post("/report/create", authenticateUser, createReport);
 
 export default router;

@@ -1,6 +1,6 @@
 import { compareSync } from "bcrypt";
-import User from "../../models/users.js";
-import Otp from "../../models/otp.js";
+import User from "../../models/User.js";
+import Otp from "../../models/Otp.js";
 import jwtPkg from "jsonwebtoken";
 const { sign } = jwtPkg;
 import { config } from "dotenv";

@@ -1,6 +1,6 @@
 import { Op, Sequelize } from "sequelize";
-import Course from "../../models/courses.js";
-import Topic from "../../models/topics.js";
+import Course from "../../models/Course.js";
+import Topic from "../../models/Topic.js";
 
 export const getAllPublishedCourse = async (req, res) => {
   try {
@@ -8,7 +8,7 @@ export const getAllPublishedCourse = async (req, res) => {
       where: {
         isPublished: true,
       },
-      include: { model: Topic, as: "topics" },
+      include: { model: Topic },
     });
 
     if (courses.length < 1)
@@ -33,7 +33,7 @@ export const getAllPublishedCourseByCategory = async (req, res) => {
         isPublished: true,
         category,
       },
-      include: { model: Topic, as: "topics" },
+      include: { model: Topic },
     });
 
     if (courses.length < 1)
@@ -55,7 +55,7 @@ export const getCourseByID = async (req, res) => {
     let { courseId } = req.params;
 
     let course = await Course.findByPk(courseId, {
-      include: { model: Topic, as: "topics" },
+      include: { model: Topic },
     });
     if (!course)
       return res.status(404).json({
@@ -125,7 +125,7 @@ export const searchPublishedCourses = async (req, res) => {
           }
         )
       ),
-      include: { model: Topic, as: "topics" },
+      include: { model: Topic },
     });
     if (courses.length < 1)
       return res.status(404).json({
@@ -146,7 +146,7 @@ export const getTopicByID = async (req, res) => {
     let { topicId } = req.params;
 
     let topic = Topic.findByPk(topicId, {
-      include: { model: Course, as: "course" },
+      include: { model: Course },
     });
     if (!topic)
       return res.status(404).json({
@@ -167,7 +167,7 @@ export const getMyCourses = async (req, res) => {
     let { id } = req.user;
 
     let courses = await Course.findAll({
-      include: { model: Topic, as: "topics" },
+      include: { model: Topic },
     });
     if (courses.length < 1)
       return res.status(404).json({
