@@ -3,6 +3,11 @@ import jwtPkg from "jsonwebtoken";
 const { sign } = jwtPkg;
 import Admin from "../../models/Admin.js";
 
+/**
+ * Add admin controller
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 export const addAdmin = async (req, res) => {
   try {
     let { firstName, lastName, email, password } = req.body;
@@ -33,6 +38,11 @@ export const addAdmin = async (req, res) => {
   }
 };
 
+/**
+ * Login admin controller
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 export const adminLogIn = async (req, res) => {
   try {
     let { adminEmail, adminPassword } = req.body;

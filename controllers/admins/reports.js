@@ -1,10 +1,14 @@
 import Report from "../../models/Report.js";
-import User from "../../models/User.js";
 
+/**
+ * Admin get all reports controller
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 export const getReports = async (req, res) => {
   try {
     const reports = await Report.findAll({
-      include: { model: User, },
+      include: { all: true },
     });
 
     if (reports.length === 0)
@@ -20,11 +24,16 @@ export const getReports = async (req, res) => {
     });
   }
 };
+/**
+ * Admin get report by id controller
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 export const getReportsById = async (req, res) => {
   try {
     const { reportId } = req.params;
     const report = await Report.findByPk(reportId, {
-      include: { model: User, },
+      include: { all: true },
     });
 
     if (!report)

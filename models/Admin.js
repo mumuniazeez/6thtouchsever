@@ -2,6 +2,9 @@ import { DataTypes } from "sequelize";
 import { database } from "../util/util.js";
 import { hashSync } from "bcrypt";
 
+/**
+ * Admin Model
+ */
 const Admin = database.define("admin", {
   id: {
     type: DataTypes.UUID,

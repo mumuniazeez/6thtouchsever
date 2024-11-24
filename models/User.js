@@ -1,9 +1,10 @@
 import { DataTypes } from "sequelize";
 import { database } from "../util/util.js";
 import { hashSync } from "bcrypt";
-import Report from "./Report.js";
-import Course from "./Course.js";
 
+/**
+ * User Model
+ */
 const User = database.define("user", {
   id: {
     type: DataTypes.UUID,
@@ -40,6 +41,5 @@ const User = database.define("user", {
     },
   },
 });
-
 
 export default User;

@@ -1,15 +1,21 @@
 import express from "express";
 import { config } from "dotenv";
 import cors from "cors";
-import router from "./router/users/router.js";
+import userRouter from "./router/users/router.js";
 import adminRouter from "./router/admins/router.js";
 import migrate from "./migrate.js";
 import rateLimit from "express-rate-limit";
 
 config();
+/**
+ * Express app for server
+ */
 const app = express();
 const port = process.env.SERVER_PORT || 3000;
 
+/**
+ * Request limiter, set requests to 100 request per 15 minute for each IP
+ */
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   limit: 100, // limit each IP to 100 requests per windowMs
@@ -32,7 +38,7 @@ app.use((req, res, next) => {
   next();
   console.log(req.method, req.url);
 });
-app.use(router);
+app.use(userRouter);
 app.use("/admin", adminRouter);
 
 await migrate();

@@ -1,5 +1,10 @@
 import Report from "../../models/Report.js";
 
+/**
+ * User Create Report
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 export const createReport = async (req, res) => {
   try {
     const { id } = req.user;

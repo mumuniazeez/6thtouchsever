@@ -1,6 +1,9 @@
 import { DataTypes } from "sequelize";
 import { database } from "../util/util.js";
 
+/**
+ * Report Model
+ */
 const Report = database.define("report", {
   id: {
     type: DataTypes.UUID,

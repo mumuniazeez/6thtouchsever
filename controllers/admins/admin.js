@@ -1,5 +1,10 @@
 import Admin from "../../models/Admin.js";
 
+/**
+ * Get admin profile
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 export const getAdminProfile = async (req, res) => {
   try {
     let { id } = req.admin;
@@ -20,6 +25,11 @@ export const getAdminProfile = async (req, res) => {
   }
 };
 
+/**
+ * Edit admin profile
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 export const editAdminProfile = async (req, res) => {
   try {
     let { id } = req.admin;
@@ -51,6 +61,11 @@ export const editAdminProfile = async (req, res) => {
   }
 };
 
+/**
+ * Delete admin profile
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 export const deleteAdminProfile = async (req, res) => {
   try {
     let { id } = req.admin;
@@ -78,6 +93,11 @@ export const deleteAdminProfile = async (req, res) => {
   }
 };
 
+/**
+ * Change admin profile avatar
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 export const changeAdminAvatar = async (req, res) => {
   try {
     let { id } = req.admin;
