@@ -1,6 +1,9 @@
 import { database } from "../util/util.js";
 import { DataTypes } from "sequelize";
 
+/**
+ * Topic Model
+ */
 const Topic = database.define("topic", {
   id: {
     type: DataTypes.UUID,

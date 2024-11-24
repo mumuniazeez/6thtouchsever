@@ -9,20 +9,21 @@ import {
 import { authenticateAdmin, memoryUpload } from "../../util/util.js";
 import {
   createCourse,
-  createTopic,
   deleteCourse,
-  deleteTopic,
   editCourse,
-  editTopic,
   getAllCourse,
   getAllCourseByCategory,
   publishCourse,
   searchAllCourses,
   unpublishCourse,
 } from "../../controllers/admins/courses.js";
-import { getReports } from "../../controllers/admins/reports.js";
+import { getReports, getReportsById } from "../../controllers/admins/reports.js";
+import { createTopic, deleteTopic, editTopic } from "../../controllers/admins/topic.js";
 
-let router = Router();
+/**
+ * Admin router
+ */
+const router = Router();
 
 /* admin routes */
 // admin auth routes
@@ -91,4 +92,5 @@ router.patch(
 
 // reports endpoint
 router.get("/reports", authenticateAdmin, getReports);
+router.get("/reports/:reportId", authenticateAdmin, getReportsById);
 export default router;

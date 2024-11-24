@@ -11,6 +11,11 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+/**
+ * User signup Controller
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 export const signUp = async (req, res) => {
   try {
     const { firstName, lastName, email, password } = req.body;
@@ -140,6 +145,11 @@ export const signUp = async (req, res) => {
   }
 };
 
+/**
+ * User Login Controller
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -186,6 +196,11 @@ export const login = async (req, res) => {
   }
 };
 
+/**
+ * User Change Password Controller
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 export const changePassword = async (req, res) => {
   try {
     let { id } = req.user;
@@ -225,6 +240,11 @@ export const changePassword = async (req, res) => {
   }
 };
 
+/**
+ * User import("express").Request OTP Controller
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 export const requestOTP = async (req, res) => {
   try {
     const { email } = req.body;
@@ -313,13 +333,13 @@ export const requestOTP = async (req, res) => {
     <div class="content">
       <p>Hi <strong>${user.firstName} ${user.lastName}</strong>,</p>
       <p>
-        You recently requested to verify your account. Use the code below to complete the verification process.
+        You recently import("express").Requested to verify your account. Use the code below to complete the verification process.
       </p>
       <div class="otp-box">
         ${otp}
       </div>
       <p>
-        This OTP is valid for the next <strong>10 minutes</strong>. If you didn’t request this code, you can safely ignore this email.
+        This OTP is valid for the next <strong>10 minutes</strong>. If you didn’t import("express").Request this code, you can safely ignore this email.
         <br />
         <strong>Don't share your OTP with anyone.</strong>
       </p>
@@ -341,12 +361,17 @@ export const requestOTP = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({
-      message: "Error requesting reset password",
+      message: "Error Requesting reset password",
       error,
     });
   }
 };
 
+/**
+ * User Validate OTP Controller
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 export const verifyOTP = async (req, res) => {
   const { email, otp } = req.body;
 
@@ -360,6 +385,11 @@ export const verifyOTP = async (req, res) => {
   res.json({ message: "OTP verified successfully" });
 };
 
+/**
+ * User Reset Password Controller
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 export const resetPassword = async (req, res) => {
   const { email, newPassword } = req.body;
 

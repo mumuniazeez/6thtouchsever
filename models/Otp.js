@@ -1,6 +1,9 @@
 import { DataTypes } from "sequelize";
 import { database } from "../util/util.js";
 
+/**
+ * Otp Model
+ */
 const Otp = database.define("otp", {
   id: {
     type: DataTypes.UUID,

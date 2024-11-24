@@ -1,6 +1,11 @@
 import User from "../../models/User.js";
 import { del, put } from "@vercel/blob";
 
+/**
+ * Get user profile
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 export const getMyProfile = async (req, res) => {
   try {
     let { id } = req.user;
@@ -25,6 +30,11 @@ export const getMyProfile = async (req, res) => {
   }
 };
 
+/**
+ * Edit user profile
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 export const editMyProfile = async (req, res) => {
   try {
     let { id } = req.user;
@@ -60,6 +70,11 @@ export const editMyProfile = async (req, res) => {
   }
 };
 
+/**
+ * Delete user profile
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 export const deleteMyProfile = async (req, res) => {
   try {
     let { id } = req.user;
@@ -86,6 +101,11 @@ export const deleteMyProfile = async (req, res) => {
   }
 };
 
+/**
+ * Change user profile avatar
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 export const changeAvatar = async (req, res) => {
   try {
     let { id } = req.user;

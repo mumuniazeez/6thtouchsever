@@ -18,20 +18,28 @@ import {
   getAllPublishedCourse,
   getAllPublishedCourseByCategory,
   getCourseByID,
-  getCourseTopics,
   getMyCourses,
-  getTopicByID,
   searchPublishedCourses,
 } from "../../controllers/users/courses.js";
 import { createReport } from "../../controllers/users/report.js";
 import rateLimit from "express-rate-limit";
+import {
+  getCourseTopics,
+  getTopicByID,
+} from "../../controllers/users/topic.js";
 
+/**
+ * User router
+ */
 const router = Router();
 
+/**
+ * OTP request limiter, set OTP requests to 1 request per windowMs
+ */
 const OTPRequestLimiter = rateLimit({
   limit: 1,
   message: {
-    message: "Too many request try again after 1 minute",
+    message: "Too many request, try again after 1 minute",
   },
 });
 

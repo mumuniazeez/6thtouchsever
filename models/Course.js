@@ -1,8 +1,9 @@
 import { DataTypes } from "sequelize";
 import { database } from "../util/util.js";
-import Topic from "./Topic.js";
-import User from "./User.js";
 
+/**
+ * Course Model
+ */
 const Course = database.define("course", {
   id: {
     type: DataTypes.UUID,

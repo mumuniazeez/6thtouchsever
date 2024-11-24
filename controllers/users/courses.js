@@ -1,8 +1,12 @@
 import { Op, Sequelize } from "sequelize";
 import Course from "../../models/Course.js";
-import Topic from "../../models/Topic.js";
 import User from "../../models/User.js";
 
+/**
+ * User Get All Published Courses
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 export const getAllPublishedCourse = async (req, res) => {
   try {
     let courses = await Course.findAll({
@@ -26,6 +30,11 @@ export const getAllPublishedCourse = async (req, res) => {
   }
 };
 
+/**
+ * User Get All Published Courses By Category
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 export const getAllPublishedCourseByCategory = async (req, res) => {
   try {
     let { category } = req.params;
@@ -51,6 +60,11 @@ export const getAllPublishedCourseByCategory = async (req, res) => {
   }
 };
 
+/**
+ * User Get All Course By Id
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 export const getCourseByID = async (req, res) => {
   try {
     let { courseId } = req.params;
@@ -81,30 +95,11 @@ export const getCourseByID = async (req, res) => {
   }
 };
 
-export const getCourseTopics = async (req, res) => {
-  try {
-    let { courseId } = req.params;
-    let topics = await Topic.findAll({
-      where: {
-        courseId,
-      },
-      include: { all: true },
-    });
-
-    if (topics.length < 1)
-      return res.status(404).json({
-        message: "No topic available under this course",
-      });
-
-    res.status(200).json(topics);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: "Error getting topics",
-    });
-  }
-};
-
+/**
+ * User Get Search Published Courses
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 export const searchPublishedCourses = async (req, res) => {
   try {
     let { q: searchQuery } = req.query;
@@ -142,31 +137,14 @@ export const searchPublishedCourses = async (req, res) => {
   }
 };
 
-export const getTopicByID = async (req, res) => {
-  try {
-    let { topicId } = req.params;
-
-    let topic = Topic.findByPk(topicId, {
-      include: { all: true },
-    });
-    if (!topic)
-      return res.status(404).json({
-        message: "Topic not available or may be deleted",
-      });
-
-    res.status(200).json(topic);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: "Error getting topic details",
-    });
-  }
-};
-
+/**
+ * User Get My Courses
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
 export const getMyCourses = async (req, res) => {
   try {
     let { id } = req.user;
-
     let user = await User.findByPk(id, {
       include: { all: true },
     });

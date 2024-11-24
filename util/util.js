@@ -5,13 +5,18 @@ import multer from "multer";
 const { verify } = jwtPkg;
 import nodemailer from "nodemailer";
 
+/**
+ * Don't remove this imports
+ *  They are there so that vercel would install them automatically
+ * */
 import "pg";
 import "pg-hstore";
 
 config();
 
-// const blobClient = createBlobClient(process.env.BLOB_READ_WRITE_TOKEN);
-
+/**
+ * 6thtouch database connection
+ */
 const database = new Sequelize(process.env.DB_URI, {
   dialect: "postgres",
   dialectOptions: {
@@ -23,7 +28,6 @@ const database = new Sequelize(process.env.DB_URI, {
   },
   pool: {
     max: 10, // Maximum number of connections in the pool
-    min: 0, // Minimum number of connections in the pool
     idle: 10000, // Connection idle time before release (in ms)
   },
   logging: false,
@@ -36,11 +40,17 @@ try {
   console.error("❌ Unable to connect to the database:", error);
 }
 
+/**
+ * Middleware to authenticate a user.
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ * @param {import("express").NextFunction} next
+ */
 const authenticateUser = async (req, res, next) => {
   let token = req.headers.authorization;
   if (!token)
     return res.status(401).send({
-      message: "Unauthorized request",
+      message: "Unauthorized Request",
     });
 
   token = token.replace("Bearer ", "");
@@ -49,7 +59,7 @@ const authenticateUser = async (req, res, next) => {
     let decoded = verify(token, process.env.JWT_SECRET);
     if (!decoded)
       return res.status(401).send({
-        message: "Unauthorized request",
+        message: "Unauthorized Request",
       });
 
     req.user = decoded;
@@ -57,11 +67,17 @@ const authenticateUser = async (req, res, next) => {
   } catch (error) {
     console.error(error);
     res.status(401).send({
-      message: "Unauthorized request",
+      message: "Unauthorized Request",
     });
   }
 };
 
+/**
+ * Middleware to authenticate an admin.
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ * @param {import("express").NextFunction} next
+ */
 const authenticateAdmin = (req, res, next) => {
   // decode the jwt token and give us your information
 
@@ -70,7 +86,7 @@ const authenticateAdmin = (req, res, next) => {
   // if no authorization token
   if (!authorization)
     return res.status(401).json({
-      message: "Unauthorized request",
+      message: "Unauthorized Request",
     });
 
   try {
@@ -83,7 +99,7 @@ const authenticateAdmin = (req, res, next) => {
     // if no decoded
     if (!decoded)
       return res.status(401).json({
-        message: "Unauthorized request",
+        message: "Unauthorized Request",
       });
 
     // setting the req.user to the decoded data
@@ -93,7 +109,7 @@ const authenticateAdmin = (req, res, next) => {
     next();
   } catch (error) {
     res.status(401).json({
-      message: "Unauthorized request",
+      message: "Unauthorized Request",
     });
   }
 };
@@ -101,14 +117,17 @@ const authenticateAdmin = (req, res, next) => {
 const memoryStorage = multer.memoryStorage();
 const memoryUpload = multer({ storage: memoryStorage });
 
- const transporter = nodemailer.createTransport({
-   host: process.env.EMAIL_HOST,
-   port: process.env.EMAIL_PORT,
-   auth: {
-     user: process.env.EMAIL_USER,
-     pass: process.env.EMAIL_PASS,
-   },
- });
+/**
+ * Email service for sending of email's to user.
+ */
+const transporter = nodemailer.createTransport({
+  host: process.env.EMAIL_HOST,
+  port: process.env.EMAIL_PORT,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
 export {
   database,
