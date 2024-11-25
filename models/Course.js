@@ -53,8 +53,6 @@ const Course = database.define("course", {
   thumbnailVideo: {
     type: DataTypes.STRING,
     allowNull: false,
-    defaultValue:
-      "https://www.6thtouchrobotics.com.ng/assets/videos/bg-video.mp4",
   },
 });
 

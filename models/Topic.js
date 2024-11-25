@@ -16,7 +16,7 @@ const Topic = database.define("topic", {
     allowNull: false,
   },
   description: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(500),
     allowNull: false,
   },
   note: {
