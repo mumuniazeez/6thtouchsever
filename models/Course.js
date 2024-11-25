@@ -49,9 +49,13 @@ const Course = database.define("course", {
   duration: {
     type: DataTypes.STRING,
     allowNull: false,
-    defaultValue: "",
+  },
+  thumbnailVideo: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue:
+      "https://www.6thtouchrobotics.com.ng/assets/videos/bg-video.mp4",
   },
 });
-
 
 export default Course;
