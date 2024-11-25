@@ -333,13 +333,13 @@ export const requestOTP = async (req, res) => {
     <div class="content">
       <p>Hi <strong>${user.firstName} ${user.lastName}</strong>,</p>
       <p>
-        You recently import("express").Requested to verify your account. Use the code below to complete the verification process.
+        You recently requested to verify your account. Use the code below to complete the verification process.
       </p>
       <div class="otp-box">
         ${otp}
       </div>
       <p>
-        This OTP is valid for the next <strong>10 minutes</strong>. If you didn’t import("express").Request this code, you can safely ignore this email.
+        This OTP is valid for the next <strong>10 minutes</strong>. If you didn’t request this code, you can safely ignore this email.
         <br />
         <strong>Don't share your OTP with anyone.</strong>
       </p>
