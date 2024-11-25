@@ -20,7 +20,7 @@ const Topic = database.define("topic", {
     allowNull: false,
   },
   note: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(500),
     allowNull: false,
   },
   video: {
