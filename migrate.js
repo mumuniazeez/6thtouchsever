@@ -2,6 +2,7 @@ import Course from "./models/Course.js";
 import Topic from "./models/Topic.js";
 import Report from "./models/Report.js";
 import User from "./models/User.js";
+import Payment from "./models/Payment.js";
 import { database } from "./util/util.js";
 
 // script.js
@@ -55,6 +56,12 @@ const migrate = async () => {
   User.belongsToMany(Course, {
     through: "userCourses",
   });
+
+  Course.hasMany(Payment);
+  Payment.belongsTo(Course);
+
+  User.hasMany(Payment);
+  Payment.belongsTo(User);
 
   await database.sync({ alter: true });
 
