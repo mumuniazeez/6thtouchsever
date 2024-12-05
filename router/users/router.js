@@ -27,6 +27,11 @@ import {
   getCourseTopics,
   getTopicByID,
 } from "../../controllers/users/topic.js";
+import {
+  createPayment,
+  getPayment,
+  getPaymentById,
+} from "../../controllers/users/payment.js";
 
 /**
  * User router
@@ -71,7 +76,12 @@ router.get("/courses/:courseId/topics", getCourseTopics);
 router.get("/courses/topics/:topicId", getTopicByID);
 router.get("/courses/:courseId", getCourseByID);
 
-// reports endpoint
-router.post("/report/create", authenticateUser, createReport);
+// reports route
+router.post("/reports/create", authenticateUser, createReport);
+
+// payment routes
+router.post("/payments/create", authenticateUser, createPayment);
+router.get("/payments/me", authenticateUser, getPayment);
+router.get("/payments/:paymentId", authenticateUser, getPaymentById);
 
 export default router;
