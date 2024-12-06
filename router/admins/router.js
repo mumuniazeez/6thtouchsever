@@ -1,10 +1,15 @@
 import { Router } from "express";
-import { addAdmin, adminLogIn } from "../../controllers/admins/auth.js";
+import {
+  addAdmin,
+  adminLogIn,
+  removeAdmin,
+} from "../../controllers/admins/auth.js";
 import {
   getAdminProfile,
   editAdminProfile,
   deleteAdminProfile,
   changeAdminAvatar,
+  getAllAdmin,
 } from "../../controllers/admins/admin.js";
 import { authenticateAdmin, memoryUpload } from "../../util/util.js";
 import {
@@ -17,8 +22,15 @@ import {
   searchAllCourses,
   unpublishCourse,
 } from "../../controllers/admins/courses.js";
-import { getReports, getReportsById } from "../../controllers/admins/reports.js";
-import { createTopic, deleteTopic, editTopic } from "../../controllers/admins/topic.js";
+import {
+  getReports,
+  getReportsById,
+} from "../../controllers/admins/reports.js";
+import {
+  createTopic,
+  deleteTopic,
+  editTopic,
+} from "../../controllers/admins/topic.js";
 
 /**
  * Admin router
@@ -29,6 +41,7 @@ const router = Router();
 // admin auth routes
 router.post("/auth/login", adminLogIn);
 router.post("/auth/addAdmin", authenticateAdmin, addAdmin);
+router.delete("/auth/removeAdmin/:adminId", authenticateAdmin, removeAdmin);
 
 // admin profile
 router.get("/me", authenticateAdmin, getAdminProfile);
@@ -40,6 +53,7 @@ router.patch(
   memoryUpload.single("avatar"),
   changeAdminAvatar
 );
+router.get("/all", authenticateAdmin, getAllAdmin);
 
 // admin courses route
 router.post(

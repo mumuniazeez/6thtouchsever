@@ -2,7 +2,7 @@ import { DataTypes } from "sequelize";
 import { database } from "../util/util.js";
 
 /**
- * Otp Model
+ * Payment Model
  */
 const Payment = database.define("payment", {
   id: {

@@ -129,3 +129,26 @@ export const changeAdminAvatar = async (req, res) => {
     });
   }
 };
+
+/**
+ * Retrieve all admin
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
+export const getAllAdmin = async (req, res) => {
+  try {
+    let admins = await Admin.findAll();
+    if (admins.length < 1)
+      return res.status(404).json({
+        message: "No admin added yet",
+      });
+
+    res.json(admins);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Error retrieving all admin",
+      error,
+    });
+  }
+};

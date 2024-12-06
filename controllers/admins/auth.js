@@ -95,3 +95,33 @@ export const adminLogIn = async (req, res) => {
     });
   }
 };
+
+/**
+ * Remover admin controller
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
+export const removeAdmin = async (req, res) => {
+  try {
+    let { adminId } = req.params;
+
+    let deletedRows = await Admin.destroy({
+      where: { id: adminId },
+      force: true,
+    });
+
+    if (deletedRows < 1)
+      return res.status(401).json({
+        message: "Unable to remove admin from admin panel",
+      });
+
+    res.status(200).json({
+      message: "Successfully remove admin from admin panel",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Error removing admin from admin panel",
+    });
+  }
+};
