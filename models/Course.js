@@ -52,7 +52,7 @@ const Course = database.define("course", {
   },
   thumbnailVideo: {
     type: DataTypes.STRING,
-    allowNull: false,
+    // allowNull: false,
   },
 });
 
