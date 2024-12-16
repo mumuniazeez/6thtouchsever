@@ -1,4 +1,6 @@
+import { del, put } from "@vercel/blob";
 import Admin from "../../models/Admin.js";
+import { transporter } from "../../util/util.js";
 
 /**
  * Get admin profile
@@ -52,7 +54,9 @@ export const editAdminProfile = async (req, res) => {
       return res.status(404).json({
         message: "Unable to edit course",
       });
-    res.status(200).json(admin);
+    res.status(200).json({
+      message: "Profile edited successfully",
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -84,7 +88,9 @@ export const deleteAdminProfile = async (req, res) => {
       return res.status(404).json({
         message: "Unable to edit course",
       });
-    res.status(200).json(admin);
+    res.status(200).json({
+      message: "Account deleted successfully",
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -110,7 +116,8 @@ export const changeAdminAvatar = async (req, res) => {
         message: "Admin account not found",
       });
 
-    if (admin.avatar) del(admin.avatar);
+    if (admin.avatar) await del(admin.avatar);
+
     const { url } = await put(`/avatars/admins/avatar`, buffer, {
       contentType: mimetype,
       access: "public",

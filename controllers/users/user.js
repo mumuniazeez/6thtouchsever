@@ -20,7 +20,6 @@ export const getMyProfile = async (req, res) => {
       });
 
     res.status(200).json(user);
-
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -118,7 +117,7 @@ export const changeAvatar = async (req, res) => {
         message: "User account not found",
       });
 
-    if (user.avatar) del(user.avatar);
+    if (user.avatar) await del(user.avatar);
     const { url } = await put(`/avatars/users/avatar`, buffer, {
       contentType: mimetype,
       access: "public",

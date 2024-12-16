@@ -1,5 +1,6 @@
 import Topic from "../../models/Topic.js";
 import { put, del } from "@vercel/blob";
+import { generateClientTokenFromReadWriteToken } from "@vercel/blob/client";
 
 /**
  * Admin create topic controller
@@ -10,19 +11,12 @@ export const createTopic = async (req, res) => {
   try {
     let { courseId } = req.params;
     let { title, note, description } = req.body;
-    let { buffer, mimetype } = req.file;
-
-    const { url } = await put(`/videos/video`, buffer, {
-      contentType: mimetype,
-      access: "public",
-    });
 
     const topic = await Topic.create({
       title,
       note,
       description,
       courseId: courseId,
-      video: url,
     });
 
     if (!topic) {
@@ -31,14 +25,48 @@ export const createTopic = async (req, res) => {
       });
     }
 
-    res.status(200).json({
+    res.status(201).json({
       message: "Topic created successfully",
+      token: await generateClientTokenFromReadWriteToken({
+        token: process.env.BLOB_READ_WRITE_TOKEN,
+        validUntil: Date.now() + 10000 * 60 * 1000,
+      }),
     });
   } catch (error) {
     console.log(error);
     res.status(500).json({
       message:
         "Error creating topic, This may be because you passed an invalid courseId",
+    });
+  }
+};
+
+/**
+ * Upload topic video url and uploading using vercel/blob/client
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
+export const uploadTopicVideoUrl = async (req, res) => {
+  try {
+    let { url } = req.body;
+    let { topicId } = req.params;
+
+    let topic = await Topic.findByPk(topicId);
+
+    if (!topic)
+      return res.status(404).json({
+        message: "Topic not found",
+      });
+
+    topic.update("video", url);
+
+    res.json({
+      message: "Video uploaded successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Error uploading topic video url",
     });
   }
 };
