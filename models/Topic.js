@@ -25,7 +25,6 @@ const Topic = database.define("topic", {
   },
   video: {
     type: DataTypes.STRING,
-    allowNull: false,
   },
 });
 

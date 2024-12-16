@@ -21,6 +21,7 @@ import {
   publishCourse,
   searchAllCourses,
   unpublishCourse,
+  uploadCourseVideoUrl,
 } from "../../controllers/admins/courses.js";
 import {
   getReports,
@@ -30,6 +31,7 @@ import {
   createTopic,
   deleteTopic,
   editTopic,
+  uploadTopicVideoUrl,
 } from "../../controllers/admins/topic.js";
 
 /**
@@ -63,6 +65,12 @@ router.post(
   createCourse
 );
 
+router.post(
+  "/course/:courseId/uploadUrl",
+  authenticateAdmin,
+  uploadCourseVideoUrl
+);
+
 router.get("/courses", authenticateAdmin, getAllCourse);
 router.get("/courses/search", authenticateAdmin, searchAllCourses);
 router.get(
@@ -71,12 +79,9 @@ router.get(
   getAllCourseByCategory
 );
 
-router.post(
-  "/courses/:courseId/topics/add",
-  authenticateAdmin,
-  memoryUpload.single("video"),
-  createTopic
-);
+router.post("/courses/:courseId/topics/add", authenticateAdmin, createTopic);
+
+router.post("/courses/topics/:topicId/uploadUrl", authenticateAdmin, uploadTopicVideoUrl);
 
 router.patch(
   "/courses/:courseId",

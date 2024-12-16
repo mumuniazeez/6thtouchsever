@@ -48,6 +48,36 @@ export const createCourse = async (req, res) => {
 };
 
 /**
+ * Upload course video url and uploading using vercel/blob/client
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
+export const uploadCourseVideoUrl = async (req, res) => {
+  try {
+    let { url } = req.body;
+    let { courseId } = req.params;
+
+    let course = await Course.findByPk(courseId);
+
+    if (!course)
+      return res.status(404).json({
+        message: "Course not found",
+      });
+
+    course.update("thumbnailVideo", url);
+
+    res.json({
+      message: "Video uploaded successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Error uploading course video url",
+    });
+  }
+};
+
+/**
  * Admin search all course controller
  * @param {import("express").Request} req
  * @param {import("express").Response} res
