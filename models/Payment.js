@@ -19,6 +19,11 @@ const Payment = database.define("payment", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  amount: {
+    type: DataTypes.DECIMAL,
+    allowNull: false,
+    defaultValue: 0,
+  },
 });
 
 export default Payment;

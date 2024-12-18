@@ -1,4 +1,5 @@
-import Topic from "../../models/Topic.js"
+import Topic from "../../models/Topic.js";
+import User from "../../models/User.js";
 
 /**
  * User Get Topics Under a Course
@@ -38,7 +39,7 @@ export const getTopicByID = async (req, res) => {
   try {
     let { topicId } = req.params;
 
-    let topic = Topic.findByPk(topicId, {
+    let topic = await Topic.findByPk(topicId, {
       include: { all: true },
     });
     if (!topic)
@@ -51,6 +52,40 @@ export const getTopicByID = async (req, res) => {
     console.log(error);
     res.status(500).json({
       message: "Error getting topic details",
+    });
+  }
+};
+
+/**
+ * User Mark Topic As Read
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
+export const markAsComplete = async (req, res) => {
+  try {
+    const { topicId } = req.params;
+    const { id } = req.user;
+
+    const topic = await Topic.findByPk(topicId);
+    if (!topic)
+      return res.status(404).json({
+        message: "Topic not found",
+      });
+    const user = await User.findByPk(id);
+    if (!user)
+      return res.status(404).json({
+        message: "User not found",
+      });
+
+    await topic.addUser(user);
+
+    res.json({
+      message: "Topic marked as complete",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Error marking topic as complete.",
     });
   }
 };

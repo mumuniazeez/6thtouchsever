@@ -52,15 +52,37 @@ const migrate = async () => {
   Course.belongsToMany(User, {
     through: "userCourses",
     as: "subscribers",
+    onDelete: "CASCADE",
+    onUpdate: "NO ACTION",
   });
   User.belongsToMany(Course, {
     through: "userCourses",
+    onDelete: "CASCADE",
+    onUpdate: "NO ACTION",
   });
 
-  Course.hasMany(Payment);
+  Topic.belongsToMany(User, {
+    through: "userProgress",
+    onDelete: "CASCADE",
+    onUpdate: "NO ACTION",
+  });
+
+  User.belongsToMany(Topic, {
+    through: "userProgress",
+    onDelete: "CASCADE",
+    onUpdate: "NO ACTION",
+  });
+
+  Course.hasMany(Payment, {
+    onDelete: "CASCADE",
+    onUpdate: "NO ACTION",
+  });
   Payment.belongsTo(Course);
 
-  User.hasMany(Payment);
+  User.hasMany(Payment, {
+    onDelete: "CASCADE",
+    onUpdate: "NO ACTION",
+  });
   Payment.belongsTo(User);
 
   await database.sync({ alter: true });

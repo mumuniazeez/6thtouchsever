@@ -19,6 +19,7 @@ import {
   getAllPublishedCourseByCategory,
   getCourseByID,
   getMyCourses,
+  searchMyCourses,
   searchPublishedCourses,
 } from "../../controllers/users/courses.js";
 import { createReport } from "../../controllers/users/report.js";
@@ -26,6 +27,7 @@ import rateLimit from "express-rate-limit";
 import {
   getCourseTopics,
   getTopicByID,
+  markAsComplete,
 } from "../../controllers/users/topic.js";
 import {
   createPayment,
@@ -70,11 +72,17 @@ router.patch(
 // courses routes
 router.get("/courses", getAllPublishedCourse);
 router.get("/courses/myCourses", authenticateUser, getMyCourses);
+router.get("/courses/myCourses/search", authenticateUser, searchMyCourses);
 router.get("/courses/search/", searchPublishedCourses);
 router.get("/courses/category/:category", getAllPublishedCourseByCategory);
 router.get("/courses/:courseId/topics", getCourseTopics);
 router.get("/courses/topics/:topicId", getTopicByID);
 router.get("/courses/:courseId", getCourseByID);
+router.put(
+  "/courses/topics/:topicId/complete",
+  authenticateUser,
+  markAsComplete
+);
 
 // reports route
 router.post("/reports/create", authenticateUser, createReport);

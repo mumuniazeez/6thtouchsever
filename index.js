@@ -35,8 +35,11 @@ app.use(
 );
 app.use(cors());
 app.use((req, res, next) => {
-  next();
   console.log(req.method, req.url);
+  res.on("finish", () => {
+    console.log(req.method, req.url, res.statusCode);
+  });
+  next();
 });
 app.use(userRouter);
 app.use("/admin", adminRouter);
