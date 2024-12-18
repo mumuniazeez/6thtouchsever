@@ -78,11 +78,6 @@ export const addAdmin = async (req, res) => {
               color: #555;
               line-height: 1.6;
             }
-            .feature-list {
-              margin: 20px 0;
-              padding-left: 20px;
-              list-style-type: disc;
-            }
             .footer {
               background-color: #f9f9f9;
               color: #888;
@@ -100,7 +95,7 @@ export const addAdmin = async (req, res) => {
             .open-btn{
               background-color: #4CAF50;
               color: white;
-              padding: 5px;
+              padding: 10px;
               border-radius: 5px;
             }
           </style>
@@ -115,12 +110,11 @@ export const addAdmin = async (req, res) => {
               <h2>Hi ${admin.firstName},</h2>
               <p>You've been added as admin on the <strong>6thtouch Admin Dashboard</strong>, 
               We are happy to have you join us build our community</p>
-              <p>Here’re your credentials to access Dashboard:</p>
-              <ul class="feature-list">
-                <li><strong>Email:</strong> ${admin.email}</li>
-                <li><strong>Passkey:</strong> ${password}</li>
-              </ul>
-              <p>
+              <p><strong>Here’re your credentials to access Dashboard:</strong></p>
+              <p><strong>Email:</strong> ${admin.email}</p>
+              <p><strong>Passkey:</strong> ${password}</p>             
+              
+              <p> 
                 Get started today and begin your teaching journey. If you need any help, our support team is always here to assist you.
               </p>
               <div class="btn-container">
@@ -154,15 +148,12 @@ export const addAdmin = async (req, res) => {
 export const adminLogIn = async (req, res) => {
   try {
     let { adminEmail, adminPassword } = req.body;
-    console.log(adminEmail);
 
     let admin = await Admin.findOne({
       where: {
         email: adminEmail,
       },
     });
-
-    console.log(admin);
 
     // check if the admin exist
     // if there no admin
