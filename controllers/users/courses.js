@@ -210,7 +210,11 @@ export const getMyCourses = async (req, res) => {
         message: "You haven't subscribed for any course yet",
       });
 
-    res.status(200).json(user.courses);
+    res.status(200).json(
+      await user.getCourses({
+        include: { all: true },
+      })
+    );
   } catch (error) {
     console.log(error);
     res.status(500).json({
