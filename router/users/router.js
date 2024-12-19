@@ -21,6 +21,7 @@ import {
   getMyCourses,
   searchMyCourses,
   searchPublishedCourses,
+  addFreeCourseToMyCourses,
 } from "../../controllers/users/courses.js";
 import { createReport } from "../../controllers/users/report.js";
 import rateLimit from "express-rate-limit";
@@ -83,6 +84,7 @@ router.put(
   authenticateUser,
   markAsComplete
 );
+router.post("/courses/free/add", authenticateUser, addFreeCourseToMyCourses);
 
 // reports route
 router.post("/reports/create", authenticateUser, createReport);
