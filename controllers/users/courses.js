@@ -1,6 +1,7 @@
 import { Op, Sequelize } from "sequelize";
 import Course from "../../models/Course.js";
 import User from "../../models/User.js";
+import Payment from "../../models/Payment.js";
 
 /**
  * User Get All Published Courses
@@ -219,6 +220,39 @@ export const getMyCourses = async (req, res) => {
     console.log(error);
     res.status(500).json({
       message: "Error getting courses",
+    });
+  }
+};
+
+export const addFreeCourseToMyCourses = async (req, res) => {
+  try {
+    const { id: userId } = req.user;
+    const { courseId } = req.body;
+
+    const course = await Course.findByPk(courseId);
+    if (!course)
+      return res.status(404).json({
+        message: "Course not found",
+      });
+    if (course.isPaid)
+      return res.status(402).json({
+        message: "This courses is paid, Pay for this course to access it",
+      });
+    const user = await User.findByPk(userId);
+    if (!user)
+      return res.status(404).json({
+        message: "User not found",
+      });
+
+    await user.addCourse(course);
+
+    res.status(200).json({
+      message: "Successfully added course to your courses",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(200).json({
+      message: "Error adding course to your courses",
     });
   }
 };
