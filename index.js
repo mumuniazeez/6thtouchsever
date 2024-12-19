@@ -24,7 +24,7 @@ const limiter = rateLimit({
   },
 });
 
-app.use(limiter);
+if (process.env.NODE_ENV !== "development") app.use(limiter);
 app.use(express.json());
 app.use(express.static("public"));
 app.use(
@@ -33,11 +33,14 @@ app.use(
     limit: "250mb",
   })
 );
-app.use(cors());
 app.use((req, res, next) => {
-  next();
   console.log(req.method, req.url);
+  res.on("finish", () => {
+    console.log(req.method, req.url, res.statusCode, res.statusMessage);
+  });
+  next();
 });
+app.use(cors());
 app.use(userRouter);
 app.use("/admin", adminRouter);
 

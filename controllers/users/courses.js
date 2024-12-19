@@ -136,6 +136,57 @@ export const searchPublishedCourses = async (req, res) => {
     });
   }
 };
+/**
+ * User Get Search Published Courses
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
+export const searchMyCourses = async (req, res) => {
+  try {
+    let { id } = req.user;
+    let { q: searchQuery } = req.query;
+    searchQuery += "%";
+
+    let user = await User.findByPk(id, {
+      include: { all: true },
+    });
+
+    if (!user)
+      return res.status(404).json({
+        message: "User not found",
+      });
+
+    let courses = await user.getCourses({
+      where: Sequelize.and(
+        { isPublished: true },
+        Sequelize.or(
+          {
+            title: {
+              [Op.iLike]: searchQuery,
+            },
+          },
+          {
+            description: {
+              [Op.iLike]: searchQuery,
+            },
+          }
+        )
+      ),
+    });
+
+    if (courses.length < 1)
+      return res.status(404).json({
+        message: "No result found",
+      });
+
+    res.status(200).json(courses);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Error searching courses",
+    });
+  }
+};
 
 /**
  * User Get My Courses
@@ -152,6 +203,11 @@ export const getMyCourses = async (req, res) => {
     if (!user)
       return res.status(404).json({
         message: "User not found",
+      });
+
+    if (user.courses.length < 1)
+      return res.status(404).json({
+        message: "You haven't subscribed for any course yet",
       });
 
     res.status(200).json(user.courses);
