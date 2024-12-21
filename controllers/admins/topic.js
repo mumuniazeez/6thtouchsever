@@ -27,10 +27,7 @@ export const createTopic = async (req, res) => {
 
     res.status(201).json({
       message: "Topic created successfully",
-      token: await generateClientTokenFromReadWriteToken({
-        token: process.env.BLOB_READ_WRITE_TOKEN,
-        validUntil: Date.now() + 10000 * 60 * 1000,
-      }),
+      topicId: topic.id,
     });
   } catch (error) {
     console.log(error);

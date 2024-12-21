@@ -6,7 +6,10 @@ import adminRouter from "./router/admins/router.js";
 import migrate from "./migrate.js";
 import rateLimit from "express-rate-limit";
 import { handleUpload } from "@vercel/blob/client";
+import { del } from "@vercel/blob";
 import { authenticateAdmin } from "./util/util.js";
+import Topic from "./models/Topic.js";
+import Course from "./models/Course.js";
 
 config();
 /**
@@ -55,30 +58,29 @@ app.post("/admin/handleUpload", async (req, res) => {
       request: req,
       onBeforeGenerateToken: async (pathname /*, clientPayload */) => {
         return {
-          allowedContentTypes: ["image/*", "video/*"],
-          tokenPayload: JSON.stringify({}),
+          allowedContentTypes: ["video/*"],
+          tokenPayload: JSON.stringify({
+            topicId: req.query.topicId || null,
+          }),
         };
       },
       onUploadCompleted: async ({ blob, tokenPayload }) => {
-        // Get notified of client upload completion
-        // ⚠️ This will not work on `localhost` websites,
-        // Use ngrok or similar to get the full upload flow
-
-        console.log("blob upload completed", blob, tokenPayload);
-
         try {
-          // Run any logic after the file upload completed,
-          // If you've already validated the user and authorization prior, you can
-          // safely update your database
+          let { topicId } = JSON.parse(tokenPayload);
+          if (topicId) {
+            let topic = await Topic.findByPk(topicId);
+            if (topic.video) await del(topic.video);
+            topic.update("video", blob.url);
+          }
         } catch (error) {
-          throw new Error("Could not update post");
+          throw new Error("Could not update topic");
         }
       },
     });
 
-    return res.json(jsonResponse);
+    res.json(jsonResponse);
   } catch (error) {
-    return res.status(400).json({ error: error.message });
+    res.status(400).json({ error: error.message });
   }
 });
 
