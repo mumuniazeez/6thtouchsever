@@ -56,21 +56,21 @@ app.post("/admin/handleUpload", async (req, res) => {
     const jsonResponse = await handleUpload({
       body,
       request: req,
-      onBeforeGenerateToken: async (pathname /*, clientPayload */) => {
+      onBeforeGenerateToken: async (pathname, clientPayload) => {
         return {
           allowedContentTypes: ["video/*"],
-          tokenPayload: JSON.stringify({
-            topicId: req.query.topicId || null,
-          }),
+          tokenPayload: clientPayload,
         };
       },
       onUploadCompleted: async ({ blob, tokenPayload }) => {
         try {
           let { topicId } = JSON.parse(tokenPayload);
+          console.log(topicId, tokenPayload);
           if (topicId) {
             let topic = await Topic.findByPk(topicId);
+            console.log(topic);
             if (topic.video) await del(topic.video);
-            topic.update("video", blob.url);
+            await topic.update("video", blob.url);
           }
         } catch (error) {
           throw new Error("Could not update topic");
