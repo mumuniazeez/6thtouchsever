@@ -71,7 +71,7 @@ app.post("/admin/handleUpload", async (req, res) => {
             console.log(topic);
             if (topic.video) await del(topic.video);
             console.log(blob)
-            await topic.update("video", blob.url);
+            await topic.update({video: blob.url});
           }
         } catch (error) {
           throw new Error("Could not update topic");
