@@ -70,6 +70,7 @@ app.post("/admin/handleUpload", async (req, res) => {
             let topic = await Topic.findByPk(topicId);
             console.log(topic);
             if (topic.video) await del(topic.video);
+            console.log(blob)
             await topic.update("video", blob.url);
           }
         } catch (error) {
