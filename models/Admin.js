@@ -40,6 +40,21 @@ const Admin = database.define("admin", {
       this.setDataValue("password", hashSync(value, 10));
     },
   },
+  courseAccess: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: true,
+  },
+  adminAccess: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: true,
+  },
+  reportAccess: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: true,
+  },
 });
 
 export default Admin;
