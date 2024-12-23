@@ -75,7 +75,6 @@ export const uploadTopicVideoUrl = async (req, res) => {
  */
 export const editTopic = async (req, res) => {
   try {
-    let path;
     let { topicId } = req.params;
     let { title, note, description } = req.body;
 
@@ -85,26 +84,11 @@ export const editTopic = async (req, res) => {
         message: "Topic not available or may be deleted",
       });
     }
-
-    if (req.file) {
-      await del(topic.video);
-
-      const { buffer, mimetype } = req.file;
-      path = await put(`/videos/video`, buffer, {
-        contentType: mimetype,
-        access: "public",
-      });
-
-      path = path.url;
-    } else {
-      path = topic.video;
-    }
-
+   
     topic.update({
       title,
       description,
       note,
-      video: path,
     });
 
     if (topic.isNewRecord) {

@@ -11,7 +11,15 @@ import { transporter } from "../../util/util.js";
  */
 export const addAdmin = async (req, res) => {
   try {
-    let { firstName, lastName, email, password } = req.body;
+    let {
+      firstName,
+      lastName,
+      email,
+      password,
+      courseAccess,
+      adminAccess,
+      reportAccess,
+    } = req.body;
 
     // insert data for database
     let admin = await Admin.create({
@@ -19,6 +27,9 @@ export const addAdmin = async (req, res) => {
       lastName,
       email,
       password,
+      courseAccess,
+      adminAccess,
+      reportAccess,
     });
 
     // check if it was successful
@@ -136,6 +147,41 @@ export const addAdmin = async (req, res) => {
     res.status(500).json({
       message:
         "Error creating adding, this may be because the admin already exist",
+    });
+  }
+};
+
+/**
+ * Manage Admin Access controller
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
+export const manageAccess = async (req, res) => {
+  try {
+    let { adminId } = req.params;
+    let { courseAccess, adminAccess, reportAccess } = req.body;
+
+    // insert data for database
+    let admin = await Admin.findByPk(adminId);
+
+    admin.update({
+      courseAccess,
+      adminAccess,
+      reportAccess,
+    });
+    // check if it was successful
+    if (admin.isNewRecord)
+      return res.status(400).json({
+        message: "Error creating account",
+      });
+
+    res.status(201).json({
+      message: "Admin Access Updated",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Error updating admin access",
     });
   }
 };

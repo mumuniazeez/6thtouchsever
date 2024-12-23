@@ -3,6 +3,7 @@ import {
   addAdmin,
   adminLogIn,
   removeAdmin,
+  manageAccess,
 } from "../../controllers/admins/auth.js";
 import {
   getAdminProfile,
@@ -43,6 +44,7 @@ const router = Router();
 // admin auth routes
 router.post("/auth/login", adminLogIn);
 router.post("/auth/addAdmin", authenticateAdmin, addAdmin);
+router.patch("/auth/manageAccess/:adminId", authenticateAdmin, manageAccess);
 router.delete("/auth/removeAdmin/:adminId", authenticateAdmin, removeAdmin);
 
 // admin profile
@@ -81,7 +83,11 @@ router.get(
 
 router.post("/courses/:courseId/topics/add", authenticateAdmin, createTopic);
 
-router.post("/courses/topics/:topicId/uploadUrl", authenticateAdmin, uploadTopicVideoUrl);
+router.post(
+  "/courses/topics/:topicId/uploadUrl",
+  authenticateAdmin,
+  uploadTopicVideoUrl
+);
 
 router.patch(
   "/courses/:courseId",
@@ -90,12 +96,7 @@ router.patch(
   editCourse
 );
 
-router.patch(
-  "/courses/topics/:topicId",
-  authenticateAdmin,
-  memoryUpload.single("video"),
-  editTopic
-);
+router.patch("/courses/topics/:topicId", authenticateAdmin, editTopic);
 
 router.delete("/courses/:courseId", authenticateAdmin, deleteCourse);
 
