@@ -35,7 +35,12 @@ const Course = database.define("course", {
   },
   price: {
     type: DataTypes.DECIMAL,
-    allowNull: false,
+    allowNull: true,
+    set(value) {
+      if (this.getDataValue("isPaid"))
+        this.setDataValue("price", value);
+      else this.setDataValue("price", 0);
+    },
   },
   category: {
     type: DataTypes.STRING,
