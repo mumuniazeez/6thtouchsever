@@ -12,7 +12,7 @@ import { put, del } from "@vercel/blob";
 export const createCourse = async (req, res) => {
   try {
     let { buffer, mimetype } = req.file;
-    let { title, description, price, category, duration } = req.body;
+    let { title, description, price, category, duration, isPaid } = req.body;
 
     const { url } = await put(`/thumbnails/thumbnail`, buffer, {
       contentType: mimetype,
@@ -25,6 +25,7 @@ export const createCourse = async (req, res) => {
       price,
       category,
       duration,
+      isPaid,
       thumbnail: url,
     });
 
@@ -181,7 +182,7 @@ export const editCourse = async (req, res) => {
   try {
     let path;
     let { courseId } = req.params;
-    let { title, description, price, category, duration } = req.body;
+    let { title, description, price, category, duration, isPaid } = req.body;
 
     let course = await Course.findByPk(courseId);
     if (!course) {
@@ -210,6 +211,7 @@ export const editCourse = async (req, res) => {
       price,
       category,
       duration,
+      isPaid,
       thumbnail: path,
     });
 
