@@ -10,7 +10,7 @@ import User from "../../models/User.js";
 export const createPayment = async (req, res) => {
   try {
     const { id: userId } = req.user;
-    const { courseId, transactionId, paymentReference, amount } = req.body;
+    const { courseId, transactionId, paymentReference } = req.body;
 
     const course = await Course.findByPk(courseId);
     if (!course)
@@ -29,7 +29,7 @@ export const createPayment = async (req, res) => {
       userId,
       transactionId,
       paymentReference,
-      amount,
+      amount: course.price,
     });
 
     if (!payment)
