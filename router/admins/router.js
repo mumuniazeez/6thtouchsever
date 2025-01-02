@@ -34,6 +34,10 @@ import {
   editTopic,
   uploadTopicVideoUrl,
 } from "../../controllers/admins/topic.js";
+import { handleUpload } from "@vercel/blob/client";
+import { del } from "@vercel/blob";
+import Topic from "../../models/Topic.js";
+import Course from "../../models/Course.js";
 
 /**
  * Admin router
@@ -113,4 +117,40 @@ router.patch(
 // reports endpoint
 router.get("/reports", authenticateAdmin, getReports);
 router.get("/reports/:reportId", authenticateAdmin, getReportsById);
+
+router.post("/handleUpload", async (req, res) => {
+  const { body } = req;
+
+  try {
+    const jsonResponse = await handleUpload({
+      body,
+      request: req,
+      onBeforeGenerateToken: async (pathname, clientPayload) => {
+        return {
+          allowedContentTypes: ["video/*"],
+          tokenPayload: clientPayload,
+        };
+      },
+      onUploadCompleted: async ({ blob, tokenPayload }) => {
+        try {
+          let { topicId } = JSON.parse(tokenPayload);
+          console.log(topicId, tokenPayload);
+          if (topicId) {
+            let topic = await Topic.findByPk(topicId);
+            console.log(topic);
+            if (topic.video) await del(topic.video);
+            console.log(blob);
+            await topic.update({ video: blob.url });
+          }
+        } catch (error) {
+          throw new Error("Could not update topic");
+        }
+      },
+    });
+
+    res.json(jsonResponse);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
 export default router;
