@@ -36,11 +36,6 @@ const Course = database.define("course", {
   price: {
     type: DataTypes.DECIMAL,
     allowNull: true,
-    set(value) {
-      if (this.getDataValue("isPaid"))
-        this.setDataValue("price", value);
-      else this.setDataValue("price", 1);
-    },
   },
   category: {
     type: DataTypes.STRING,
