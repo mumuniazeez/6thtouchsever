@@ -39,7 +39,7 @@ const Course = database.define("course", {
     set(value) {
       if (this.getDataValue("isPaid"))
         this.setDataValue("price", value);
-      else this.setDataValue("price", 0);
+      else this.setDataValue("price", 1);
     },
   },
   category: {
