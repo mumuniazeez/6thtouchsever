@@ -1,7 +1,7 @@
 import { Op, Sequelize } from "sequelize";
 import Course from "../../models/Course.js";
 import User from "../../models/User.js";
-import Payment from "../../models/Payment.js";
+import Topic from "../../models/Topic.js";
 
 /**
  * User Get All Published Courses
@@ -173,6 +173,7 @@ export const searchMyCourses = async (req, res) => {
           }
         )
       ),
+      include: [{ all: true }],
     });
 
     if (courses.length < 1)
@@ -211,7 +212,7 @@ export const getMyCourses = async (req, res) => {
         message: "You haven't subscribed for any course yet",
       });
 
-    res.status(200).json(user.courses);
+    res.status(200).json(await user.getCourses({ include: [{ all: true }] }));
   } catch (error) {
     console.log(error);
     res.status(500).json({
