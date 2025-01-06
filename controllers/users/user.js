@@ -12,6 +12,9 @@ export const getMyProfile = async (req, res) => {
 
     let user = await User.findByPk(id, {
       include: { all: true },
+      attributes: {
+        exclude: ["password"],
+      },
     });
 
     if (!user)

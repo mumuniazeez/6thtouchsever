@@ -200,6 +200,9 @@ export const getMyCourses = async (req, res) => {
     let { id } = req.user;
     let user = await User.findByPk(id, {
       include: { all: true },
+      attributes: {
+        exclude: ["password"],
+      },
     });
 
     if (!user)
@@ -212,7 +215,11 @@ export const getMyCourses = async (req, res) => {
         message: "You haven't subscribed for any course yet",
       });
 
-    res.status(200).json(await user.getCourses({ include: [{ all: true }] }));
+    res.status(200).json(
+      await user.getCourses({
+        include: [{ all: true }],
+      })
+    );
   } catch (error) {
     console.log(error);
     res.status(500).json({
