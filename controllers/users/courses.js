@@ -181,6 +181,14 @@ export const searchMyCourses = async (req, res) => {
         message: "No result found",
       });
 
+    courses.forEach((course) => {
+      course.set({
+        completedTopics: user.topics.filter(
+          (topic) => topic.courseId === course.id
+        ),
+      });
+    });
+
     res.status(200).json(courses);
   } catch (error) {
     console.log(error);
@@ -224,7 +232,7 @@ export const getMyCourses = async (req, res) => {
       });
     });
 
-    res.status(200).send(courses);
+    res.status(200).json(courses);
   } catch (error) {
     console.log(error);
     res.status(500).json({
