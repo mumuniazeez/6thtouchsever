@@ -260,8 +260,6 @@ export const requestOTP = async (req, res) => {
     // Save OTP to database
     await Otp.create({ email, otp, expiresAt: expiration });
 
-    console.log(otp);
-
     await transporter.sendMail({
       // from: `6thtouch - <${process.env.EMAIL_USER}>`,
       from: process.env.EMAIL_USER,

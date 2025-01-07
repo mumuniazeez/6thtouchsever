@@ -181,6 +181,14 @@ export const searchMyCourses = async (req, res) => {
         message: "No result found",
       });
 
+    courses.forEach((course) => {
+      course.set({
+        completedTopics: user.topics.filter(
+          (topic) => topic.courseId === course.id
+        ),
+      });
+    });
+
     res.status(200).json(courses);
   } catch (error) {
     console.log(error);
@@ -212,7 +220,19 @@ export const getMyCourses = async (req, res) => {
         message: "You haven't subscribed for any course yet",
       });
 
-    res.status(200).json(await user.getCourses({ include: [{ all: true }] }));
+    let courses = await user.getCourses({
+      include: [{ all: true }],
+    });
+
+    courses.forEach((course, index) => {
+      course.set({
+        completedTopics: user.topics.filter(
+          (topic) => topic.courseId === course.id
+        ),
+      });
+    });
+
+    res.status(200).json(courses);
   } catch (error) {
     console.log(error);
     res.status(500).json({
