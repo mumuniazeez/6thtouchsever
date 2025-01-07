@@ -200,9 +200,6 @@ export const getMyCourses = async (req, res) => {
     let { id } = req.user;
     let user = await User.findByPk(id, {
       include: { all: true },
-      attributes: {
-        exclude: ["password"],
-      },
     });
 
     if (!user)
@@ -215,11 +212,19 @@ export const getMyCourses = async (req, res) => {
         message: "You haven't subscribed for any course yet",
       });
 
-    res.status(200).json(
-      await user.getCourses({
-        include: [{ all: true }],
-      })
-    );
+    let courses = await user.getCourses({
+      include: [{ all: true }],
+    });
+
+    courses.forEach((course, index) => {
+      course.set({
+        completedTopics: user.topics.filter(
+          (topic) => topic.courseId === course.id
+        ),
+      });
+    });
+
+    res.status(200).send(courses);
   } catch (error) {
     console.log(error);
     res.status(500).json({

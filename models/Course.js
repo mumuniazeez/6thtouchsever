@@ -54,6 +54,9 @@ const Course = database.define("course", {
     type: DataTypes.STRING,
     // allowNull: false,
   },
+  completedTopics: {
+    type: DataTypes.VIRTUAL,
+  },
 });
 
 export default Course;
